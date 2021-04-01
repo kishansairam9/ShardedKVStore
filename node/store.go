@@ -1,4 +1,4 @@
-package ShardedKVStore
+package node
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/raft"
-	raftmdb "github.com/hashicorp/raft-mdb"
+	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"github.com/prologic/bitcask"
 )
 
@@ -66,7 +66,7 @@ func (s *Store) Open(enableSingle bool, serverID string) string {
 	}
 
 	// For Log and Stable storages of raft
-	dbStore, err := raftmdb.NewMDBStore(filepath.Join(s.RaftDir, "raft.db"))
+	dbStore, err := raftboltdb.NewBoltStore(filepath.Join(s.RaftDir, "raft.db"))
 	if err != nil {
 		return "ERR:Failed while initializing MDBStore"
 	}
@@ -142,7 +142,7 @@ func (s *Store) Get(key string) string {
 
 func (s *Store) Put(key, val string) string {
 	if s.raft.State() != raft.Leader {
-		return "ERR:Called put on non leader"
+		return "NONLEADER:Called put on non leader"
 	}
 	// Set command to apply on fsm and send it by marshalling into json
 	cmd := &command{
@@ -155,7 +155,10 @@ func (s *Store) Put(key, val string) string {
 		return "ERR:Couldn't marshall command\n" + err.Error()
 	}
 	f := s.raft.Apply(body, raftTimeout)
-	return "ERR:Failed Raft Apply" + f.Error().Error()
+	if f.Error() != nil {
+		return "ERR:Failed Raft Apply" + f.Error().Error()
+	}
+	return "SUCCES:Put " + key + " : " + val
 }
 
 func (s *Store) Delete(key string) string {
@@ -175,7 +178,7 @@ func (s *Store) Delete(key string) string {
 	return "ERR:Failed Raft Apply" + f.Error().Error()
 }
 
-func (s *Store) Flush(key string) string {
+func (s *Store) Flush() string {
 	// Set command to apply on fsm and send it by marshalling into json
 	cmd := &command{
 		Op: "flush",

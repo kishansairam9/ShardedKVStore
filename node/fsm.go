@@ -1,4 +1,4 @@
-package ShardedKVStore
+package node
 
 import (
 	"bufio"
