@@ -23,7 +23,7 @@ func (f *fsm) applyPut(key, val string) interface{} {
 	if err != nil {
 		return "ERR:Couldn't put in KV Store\n" + err.Error()
 	}
-	return "SUCESS:Put in KV Store"
+	return "SUCCESS:Put in KV Store"
 }
 
 func (f *fsm) applyDelete(key string) interface{} {
@@ -33,7 +33,7 @@ func (f *fsm) applyDelete(key string) interface{} {
 	if err != nil {
 		return "ERR:Couldn't delete\n" + err.Error()
 	}
-	return "SUCESS:Deleted"
+	return "SUCCESS:Deleted"
 }
 
 func (f *fsm) applyFlush() interface{} {

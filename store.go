@@ -98,7 +98,35 @@ func (s *Store) Close() string {
 	if err != nil {
 		return "ERR:Couldn't close DB\n" + err.Error()
 	}
-	return "SUCESS:Closed DB"
+	return "SUCCESS:Closed DB"
+}
+
+func (s *Store) Join(nodeID, addr string) string {
+	configFuture := s.raft.GetConfiguration()
+	if err := configFuture.Error(); err != nil {
+		return "ERR:Failed to get raft configuration" + err.Error()
+	}
+
+	for _, srv := range configFuture.Configuration().Servers {
+		// If another node exists with joining nodeID or address report
+		if srv.ID == raft.ServerID(nodeID) || srv.Address == raft.ServerAddress(addr) {
+			return "ERR:Another node exists ID:Address " + string(srv.ID) + ":" + string(srv.Address) + ", remove that node ID to create with this configuration"
+		}
+	}
+
+	f := s.raft.AddVoter(raft.ServerID(nodeID), raft.ServerAddress(addr), 0, 0)
+	if f.Error() != nil {
+		return "ERR:Failed to add as raft voter" + f.Error().Error()
+	}
+	return "SUCCESS:Node " + nodeID + " at " + addr + "joined successfully"
+}
+
+func (s *Store) RemoveNode(nodeID string) string {
+	future := s.raft.RemoveServer(raft.ServerID(nodeID), 0, 0)
+	if err := future.Error(); err != nil {
+		return "ERR:Failed to remove node at " + nodeID + "\n" + err.Error()
+	}
+	return "SUCCESS:Removed Node with ID " + nodeID
 }
 
 func (s *Store) Get(key string) string {
