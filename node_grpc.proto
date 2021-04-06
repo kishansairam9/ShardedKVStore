@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "./node";
 
-service ReplicaSet {
+service Node {
     rpc Init(InitConfig) returns (OneString) {}
     rpc Join(JoinConfig) returns (OneString) {}
     rpc Get(OneString) returns (OneString) {}

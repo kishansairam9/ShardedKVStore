@@ -10,12 +10,12 @@ import (
 	"google.golang.org/grpc"
 )
 
-type replicaSetServer struct {
-	node.ReplicaSetServer
+type nodeGrpcServer struct {
+	node.NodeServer
 	s *node.Store
 }
 
-func (r *replicaSetServer) Init(ctx context.Context, config *node.InitConfig) (*node.OneString, error) {
+func (r *nodeGrpcServer) Init(ctx context.Context, config *node.InitConfig) (*node.OneString, error) {
 	var ret node.OneString
 	r.s, ret.Msg = node.New(config.StoreDir)
 	if r.s == nil {
@@ -30,7 +30,7 @@ func (r *replicaSetServer) Init(ctx context.Context, config *node.InitConfig) (*
 	return &ret, nil
 }
 
-func (r *replicaSetServer) Join(ctx context.Context, config *node.JoinConfig) (*node.OneString, error) {
+func (r *nodeGrpcServer) Join(ctx context.Context, config *node.JoinConfig) (*node.OneString, error) {
 	var ret node.OneString
 	if r.s == nil {
 		ret.Msg = "ERR:Server not initialized, call init first"
@@ -40,7 +40,7 @@ func (r *replicaSetServer) Join(ctx context.Context, config *node.JoinConfig) (*
 	return &ret, nil
 }
 
-func (r *replicaSetServer) Put(ctx context.Context, config *node.KVPair) (*node.OneString, error) {
+func (r *nodeGrpcServer) Put(ctx context.Context, config *node.KVPair) (*node.OneString, error) {
 	var ret node.OneString
 	if r.s == nil {
 		ret.Msg = "ERR:Server not initialized, call init first"
@@ -50,7 +50,7 @@ func (r *replicaSetServer) Put(ctx context.Context, config *node.KVPair) (*node.
 	return &ret, nil
 }
 
-func (r *replicaSetServer) Get(ctx context.Context, config *node.OneString) (*node.OneString, error) {
+func (r *nodeGrpcServer) Get(ctx context.Context, config *node.OneString) (*node.OneString, error) {
 	var ret node.OneString
 	if r.s == nil {
 		ret.Msg = "ERR:Server not initialized, call init first"
@@ -60,7 +60,7 @@ func (r *replicaSetServer) Get(ctx context.Context, config *node.OneString) (*no
 	return &ret, nil
 }
 
-func (r *replicaSetServer) Delete(ctx context.Context, config *node.OneString) (*node.OneString, error) {
+func (r *nodeGrpcServer) Delete(ctx context.Context, config *node.OneString) (*node.OneString, error) {
 	var ret node.OneString
 	if r.s == nil {
 		ret.Msg = "ERR:Server not initialized, call init first"
@@ -70,7 +70,7 @@ func (r *replicaSetServer) Delete(ctx context.Context, config *node.OneString) (
 	return &ret, nil
 }
 
-func (r *replicaSetServer) Close(ctx context.Context, config *node.OneString) (*node.OneString, error) {
+func (r *nodeGrpcServer) Close(ctx context.Context, config *node.OneString) (*node.OneString, error) {
 	var ret node.OneString
 	if r.s == nil {
 		ret.Msg = "ERR:Server not initialized, call init first"
@@ -86,12 +86,12 @@ func main() {
 		log.Fatalf("Failed to listen on port :9000 %v", err)
 	}
 
-	r := replicaSetServer{}
+	r := nodeGrpcServer{}
 	r.s = nil
 
 	grpcServer := grpc.NewServer()
 
-	node.RegisterReplicaSetServer(grpcServer, &r)
+	node.RegisterNodeServer(grpcServer, &r)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve Grpc on port %v\n%v", string(os.Args[1]), err)
