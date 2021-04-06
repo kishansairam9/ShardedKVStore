@@ -1,8 +1,7 @@
-package ShardedKVStore
+package node
 
 import (
 	"encoding/json"
-	"fmt"
 	"net"
 	"os"
 	"path/filepath"
@@ -10,7 +9,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/raft"
-	raftmdb "github.com/hashicorp/raft-mdb"
+	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"github.com/prologic/bitcask"
 )
 
@@ -35,15 +34,15 @@ const (
 	raftTimeout         = 10 * time.Second
 )
 
-func New(storeDir string) *Store {
+func New(storeDir string) (*Store, string) {
 	db, err := bitcask.Open(storeDir)
 	if err != nil {
-		panic(fmt.Sprintf("ERR:Failed to create KV Store database : %s", err.Error()))
+		return nil, "ERR:Failed to create KV Store database at given directory, try different\n" + err.Error()
 	}
 	return &Store{
 		kv:    db,
 		KVDir: storeDir,
-	}
+	}, "SUCCESS:Created KV Store"
 }
 
 func (s *Store) Open(enableSingle bool, serverID string) string {
@@ -66,7 +65,7 @@ func (s *Store) Open(enableSingle bool, serverID string) string {
 	}
 
 	// For Log and Stable storages of raft
-	dbStore, err := raftmdb.NewMDBStore(filepath.Join(s.RaftDir, "raft.db"))
+	dbStore, err := raftboltdb.NewBoltStore(filepath.Join(s.RaftDir, "raft.db"))
 	if err != nil {
 		return "ERR:Failed while initializing MDBStore"
 	}
@@ -108,17 +107,27 @@ func (s *Store) Join(nodeID, addr string) string {
 	}
 
 	for _, srv := range configFuture.Configuration().Servers {
-		// If another node exists with joining nodeID or address report
+		// If a node already exists with either the joining node's ID or address,
+		// that node may need to be removed from the config first.
 		if srv.ID == raft.ServerID(nodeID) || srv.Address == raft.ServerAddress(addr) {
-			return "ERR:Another node exists ID:Address " + string(srv.ID) + ":" + string(srv.Address) + ", remove that node ID to create with this configuration"
+			// However if *both* the ID and the address are the same, then nothing -- not even
+			// a join operation -- is needed.
+			if srv.Address == raft.ServerAddress(addr) && srv.ID == raft.ServerID(nodeID) {
+				return "SUCCESS:Done"
+			}
+
+			future := s.raft.RemoveServer(srv.ID, 0, 0)
+			if err := future.Error(); err != nil {
+				return "ERR:Failed to remove node at " + nodeID + " : " + string(srv.Address) + "\n" + err.Error()
+			}
 		}
 	}
 
 	f := s.raft.AddVoter(raft.ServerID(nodeID), raft.ServerAddress(addr), 0, 0)
 	if f.Error() != nil {
-		return "ERR:Failed to add as raft voter" + f.Error().Error()
+		return "ERR:Failed to add as raft voter\n" + f.Error().Error()
 	}
-	return "SUCCESS:Node " + nodeID + " at " + addr + "joined successfully"
+	return "SUCCESS:Node " + nodeID + " at " + addr + " joined successfully"
 }
 
 func (s *Store) RemoveNode(nodeID string) string {
@@ -140,9 +149,16 @@ func (s *Store) Get(key string) string {
 	return "SUCCESS:" + string(val)
 }
 
+func (s *Store) IsLeader() string {
+	if s.raft.State() != raft.Leader {
+		return "NONLEADER:Not a leader"
+	}
+	return "SUCCESS:Leader"
+}
+
 func (s *Store) Put(key, val string) string {
 	if s.raft.State() != raft.Leader {
-		return "ERR:Called put on non leader"
+		return "NONLEADER:Called put on non leader"
 	}
 	// Set command to apply on fsm and send it by marshalling into json
 	cmd := &command{
@@ -155,7 +171,10 @@ func (s *Store) Put(key, val string) string {
 		return "ERR:Couldn't marshall command\n" + err.Error()
 	}
 	f := s.raft.Apply(body, raftTimeout)
-	return "ERR:Failed Raft Apply" + f.Error().Error()
+	if f.Error() != nil {
+		return "ERR:Failed Raft Apply" + f.Error().Error()
+	}
+	return "SUCCESS:Put " + key + " : " + val
 }
 
 func (s *Store) Delete(key string) string {
@@ -172,10 +191,13 @@ func (s *Store) Delete(key string) string {
 		return "ERR:Couldn't marshall command\n" + err.Error()
 	}
 	f := s.raft.Apply(body, raftTimeout)
-	return "ERR:Failed Raft Apply" + f.Error().Error()
+	if f.Error() != nil {
+		return "ERR:Failed Raft Apply" + f.Error().Error()
+	}
+	return "SUCCESS:Delete " + key
 }
 
-func (s *Store) Flush(key string) string {
+func (s *Store) Flush() string {
 	// Set command to apply on fsm and send it by marshalling into json
 	cmd := &command{
 		Op: "flush",

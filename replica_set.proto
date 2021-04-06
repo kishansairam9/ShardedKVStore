@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option go_package = "./node";
+
+service ReplicaSet {
+    rpc Init(InitConfig) returns (OneString) {}
+    rpc Join(JoinConfig) returns (OneString) {}
+    rpc Get(OneString) returns (OneString) {}
+    rpc Put(KVPair) returns (OneString) {}
+    rpc Delete(OneString) returns (OneString) {}
+    rpc Close(OneString) returns (OneString) {}
+}
+
+message OneString {
+    string Msg = 1;
+}
+
+message KVPair {
+    string Key = 1;
+    string Val = 2;
+}
+
+message InitConfig {
+    string RaftDir = 1;
+    string RaftAddr = 2;
+    string StoreDir = 3;
+    bool Leader = 4;
+    string NodeID = 5;
+}
+
+message JoinConfig {
+    string NodeID = 1;
+    string Addr = 2;
+}

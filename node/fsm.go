@@ -1,11 +1,10 @@
-package ShardedKVStore
+package node
 
 import (
 	"bufio"
 	"compress/gzip"
 	"encoding/binary"
 	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -40,15 +39,15 @@ func (f *fsm) applyFlush() interface{} {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if err := f.kv.Sync(); err != nil {
-		panic(err.Error())
+		return "ERR:Couldn't flush DB" + err.Error()
 	}
-	return nil
+	return "SUCCESS:Flushed DB"
 }
 
 func (f *fsm) Apply(l *raft.Log) interface{} {
 	var c command
 	if err := json.Unmarshal(l.Data, &c); err != nil {
-		panic(fmt.Sprintf("ERR: Failed to unmarshall command : %s", err.Error()))
+		return "ERR:Failed to unmarshall command\n" + err.Error()
 	}
 	switch c.Op {
 	case "put":
@@ -58,7 +57,7 @@ func (f *fsm) Apply(l *raft.Log) interface{} {
 	case "flush":
 		return f.applyFlush()
 	default:
-		panic(fmt.Sprintf("Unknown command %s", c.Op))
+		return "ERR:Unknown command - " + c.Op
 	}
 }
 
