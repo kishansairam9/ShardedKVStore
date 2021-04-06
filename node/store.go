@@ -108,8 +108,7 @@ func (s *Store) Join(nodeID, addr string) string {
 		// If a node already exists with either the joining node's ID or address,
 		// that node may need to be removed from the config first.
 		if srv.ID == raft.ServerID(nodeID) || srv.Address == raft.ServerAddress(addr) {
-			// However if *both* the ID and the address are the same, then nothing -- not even
-			// a join operation -- is needed.
+			// In case both are same then no need to do anything
 			if srv.Address == raft.ServerAddress(addr) && srv.ID == raft.ServerID(nodeID) {
 				return "SUCCESS:Done"
 			}
@@ -177,7 +176,7 @@ func (s *Store) Put(key, val string) string {
 
 func (s *Store) Delete(key string) string {
 	if s.raft.State() != raft.Leader {
-		return "ERR:Called delete on non leader"
+		return "NONLEADER:Called put on non leader"
 	}
 	// Set command to apply on fsm and send it by marshalling into json
 	cmd := &command{

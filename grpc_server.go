@@ -83,6 +83,16 @@ func (r *nodeGrpcServer) Close(ctx context.Context, config *node.OneString) (*no
 	return &ret, nil
 }
 
+func (r *nodeGrpcServer) IsLeader(ctx context.Context, config *node.OneString) (*node.OneString, error) {
+	var ret node.OneString
+	if r.s == nil {
+		ret.Msg = "ERR:Server not initialized, call init first"
+		return &ret, nil
+	}
+	ret.Msg = r.s.IsLeader()
+	return &ret, nil
+}
+
 func main() {
 	lis, err := net.Listen("tcp", ":"+string(os.Args[1]))
 	if err != nil {
@@ -104,8 +114,10 @@ func main() {
 	}()
 
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	<-sigs
 	fmt.Println("\nRecieved terminate signal, closing DB to exit gracefully")
-	r.s.Close()
+	if r.s != nil {
+		r.s.Close()
+	}
 }

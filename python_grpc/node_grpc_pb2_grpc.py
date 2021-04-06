@@ -44,6 +44,11 @@ class NodeStub(object):
                 request_serializer=node__grpc__pb2.OneString.SerializeToString,
                 response_deserializer=node__grpc__pb2.OneString.FromString,
                 )
+        self.IsLeader = channel.unary_unary(
+                '/Node/IsLeader',
+                request_serializer=node__grpc__pb2.OneString.SerializeToString,
+                response_deserializer=node__grpc__pb2.OneString.FromString,
+                )
 
 
 class NodeServicer(object):
@@ -85,6 +90,12 @@ class NodeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def IsLeader(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_NodeServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -115,6 +126,11 @@ def add_NodeServicer_to_server(servicer, server):
             ),
             'Close': grpc.unary_unary_rpc_method_handler(
                     servicer.Close,
+                    request_deserializer=node__grpc__pb2.OneString.FromString,
+                    response_serializer=node__grpc__pb2.OneString.SerializeToString,
+            ),
+            'IsLeader': grpc.unary_unary_rpc_method_handler(
+                    servicer.IsLeader,
                     request_deserializer=node__grpc__pb2.OneString.FromString,
                     response_serializer=node__grpc__pb2.OneString.SerializeToString,
             ),
@@ -225,6 +241,23 @@ class Node(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Node/Close',
+            node__grpc__pb2.OneString.SerializeToString,
+            node__grpc__pb2.OneString.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def IsLeader(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Node/IsLeader',
             node__grpc__pb2.OneString.SerializeToString,
             node__grpc__pb2.OneString.FromString,
             options, channel_credentials,

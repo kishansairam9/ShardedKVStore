@@ -24,6 +24,7 @@ type NodeClient interface {
 	Put(ctx context.Context, in *KVPair, opts ...grpc.CallOption) (*OneString, error)
 	Delete(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error)
 	Close(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error)
+	IsLeader(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error)
 }
 
 type nodeClient struct {
@@ -88,6 +89,15 @@ func (c *nodeClient) Close(ctx context.Context, in *OneString, opts ...grpc.Call
 	return out, nil
 }
 
+func (c *nodeClient) IsLeader(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error) {
+	out := new(OneString)
+	err := c.cc.Invoke(ctx, "/Node/IsLeader", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NodeServer is the server API for Node service.
 // All implementations must embed UnimplementedNodeServer
 // for forward compatibility
@@ -98,6 +108,7 @@ type NodeServer interface {
 	Put(context.Context, *KVPair) (*OneString, error)
 	Delete(context.Context, *OneString) (*OneString, error)
 	Close(context.Context, *OneString) (*OneString, error)
+	IsLeader(context.Context, *OneString) (*OneString, error)
 	mustEmbedUnimplementedNodeServer()
 }
 
@@ -122,6 +133,9 @@ func (UnimplementedNodeServer) Delete(context.Context, *OneString) (*OneString, 
 }
 func (UnimplementedNodeServer) Close(context.Context, *OneString) (*OneString, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Close not implemented")
+}
+func (UnimplementedNodeServer) IsLeader(context.Context, *OneString) (*OneString, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsLeader not implemented")
 }
 func (UnimplementedNodeServer) mustEmbedUnimplementedNodeServer() {}
 
@@ -244,6 +258,24 @@ func _Node_Close_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Node_IsLeader_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OneString)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NodeServer).IsLeader(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Node/IsLeader",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NodeServer).IsLeader(ctx, req.(*OneString))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Node_ServiceDesc is the grpc.ServiceDesc for Node service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -274,6 +306,10 @@ var Node_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Close",
 			Handler:    _Node_Close_Handler,
+		},
+		{
+			MethodName: "IsLeader",
+			Handler:    _Node_IsLeader_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
