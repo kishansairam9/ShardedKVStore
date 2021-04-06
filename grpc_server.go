@@ -26,7 +26,7 @@ func (r *nodeGrpcServer) Init(ctx context.Context, config *node.InitConfig) (*no
 	}
 	r.s.RaftDir = config.RaftDir
 	r.s.RaftBind = config.RaftAddr
-	ret.Msg = r.s.Open(config.Leader, config.NodeID)
+	ret.Msg = r.s.Open(config.NodeID)
 	if ret.Msg[0] == 'E' {
 		r.s = nil
 	}

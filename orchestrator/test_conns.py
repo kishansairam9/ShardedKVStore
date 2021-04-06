@@ -20,7 +20,7 @@ stub3 = node_grpc_pb2_grpc.NodeStub(channel3)
 #     'NodeID': '1'
 # }
 
-request = node_grpc_pb2.InitConfig(RaftDir='./testing/raft1', RaftAddr='localhost:8005', StoreDir='./testing/store1', Leader=True, NodeID='1')
+request = node_grpc_pb2.InitConfig(RaftDir='./testing/raft1', RaftAddr='localhost:8005', StoreDir='./testing/store1',   NodeID='1')
 
 print(stub1.Init(request))
 sleep(5)
@@ -34,12 +34,12 @@ print(stub1.Get(request))
 request = node_grpc_pb2.OneString(Msg='1abc')
 print(stub1.Get(request))
 
-request = node_grpc_pb2.InitConfig(RaftDir='./testing/raft2', RaftAddr='localhost:8006', StoreDir='./testing/store2', Leader=True, NodeID='2')
+request = node_grpc_pb2.InitConfig(RaftDir='./testing/raft2', RaftAddr='localhost:8006', StoreDir='./testing/store2',   NodeID='2')
 
 print(stub2.Init(request))
 sleep(5)
 
-request = node_grpc_pb2.InitConfig(RaftDir='./testing/raft3', RaftAddr='localhost:8007', StoreDir='./testing/store3', Leader=True, NodeID='3')
+request = node_grpc_pb2.InitConfig(RaftDir='./testing/raft3', RaftAddr='localhost:8007', StoreDir='./testing/store3',   NodeID='3')
 
 print(stub3.Init(request))
 sleep(5)

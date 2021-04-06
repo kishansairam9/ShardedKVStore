@@ -45,7 +45,7 @@ func New(storeDir string) (*Store, string) {
 	}, "SUCCESS:Created KV Store"
 }
 
-func (s *Store) Open(enableSingle bool, serverID string) string {
+func (s *Store) Open(serverID string) string {
 	config := raft.DefaultConfig()
 	config.LocalID = raft.ServerID(serverID)
 
@@ -76,17 +76,15 @@ func (s *Store) Open(enableSingle bool, serverID string) string {
 	}
 	s.raft = ra
 
-	if enableSingle {
-		configuration := raft.Configuration{
-			Servers: []raft.Server{
-				{
-					ID:      config.LocalID,
-					Address: transport.LocalAddr(),
-				},
+	configuration := raft.Configuration{
+		Servers: []raft.Server{
+			{
+				ID:      config.LocalID,
+				Address: transport.LocalAddr(),
 			},
-		}
-		ra.BootstrapCluster(configuration)
+		},
 	}
+	ra.BootstrapCluster(configuration)
 	return "SUCCESS:Opened new store\n"
 }
 
