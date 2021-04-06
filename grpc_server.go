@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/kishansairam9/ShardedKVStore/node"
 	"google.golang.org/grpc"
@@ -93,9 +96,16 @@ func main() {
 
 	node.RegisterNodeServer(grpcServer, &r)
 
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve Grpc on port %v\n%v", string(os.Args[1]), err)
-	}
-	r.s.Close()
+	// Run GPRC Server concurrently and main waits for interrupts to exit gracefully
+	go func() {
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("Failed to serve Grpc on port %v\n%v", string(os.Args[1]), err)
+		}
+	}()
 
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
+	<-sigs
+	fmt.Println("\nRecieved terminate signal, closing DB to exit gracefully")
+	r.s.Close()
 }
