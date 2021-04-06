@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import replica_set_pb2 as replica__set__pb2
+from .import replica_set_pb2 as replica__set__pb2
 
 
 class ReplicaSetStub(object):
@@ -24,11 +24,6 @@ class ReplicaSetStub(object):
                 request_serializer=replica__set__pb2.JoinConfig.SerializeToString,
                 response_deserializer=replica__set__pb2.OneString.FromString,
                 )
-        self.RemoveNode = channel.unary_unary(
-                '/ReplicaSet/RemoveNode',
-                request_serializer=replica__set__pb2.OneString.SerializeToString,
-                response_deserializer=replica__set__pb2.OneString.FromString,
-                )
         self.Get = channel.unary_unary(
                 '/ReplicaSet/Get',
                 request_serializer=replica__set__pb2.OneString.SerializeToString,
@@ -44,6 +39,11 @@ class ReplicaSetStub(object):
                 request_serializer=replica__set__pb2.OneString.SerializeToString,
                 response_deserializer=replica__set__pb2.OneString.FromString,
                 )
+        self.Close = channel.unary_unary(
+                '/ReplicaSet/Close',
+                request_serializer=replica__set__pb2.OneString.SerializeToString,
+                response_deserializer=replica__set__pb2.OneString.FromString,
+                )
 
 
 class ReplicaSetServicer(object):
@@ -56,12 +56,6 @@ class ReplicaSetServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def Join(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def RemoveNode(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -85,6 +79,12 @@ class ReplicaSetServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Close(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ReplicaSetServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -96,11 +96,6 @@ def add_ReplicaSetServicer_to_server(servicer, server):
             'Join': grpc.unary_unary_rpc_method_handler(
                     servicer.Join,
                     request_deserializer=replica__set__pb2.JoinConfig.FromString,
-                    response_serializer=replica__set__pb2.OneString.SerializeToString,
-            ),
-            'RemoveNode': grpc.unary_unary_rpc_method_handler(
-                    servicer.RemoveNode,
-                    request_deserializer=replica__set__pb2.OneString.FromString,
                     response_serializer=replica__set__pb2.OneString.SerializeToString,
             ),
             'Get': grpc.unary_unary_rpc_method_handler(
@@ -115,6 +110,11 @@ def add_ReplicaSetServicer_to_server(servicer, server):
             ),
             'Delete': grpc.unary_unary_rpc_method_handler(
                     servicer.Delete,
+                    request_deserializer=replica__set__pb2.OneString.FromString,
+                    response_serializer=replica__set__pb2.OneString.SerializeToString,
+            ),
+            'Close': grpc.unary_unary_rpc_method_handler(
+                    servicer.Close,
                     request_deserializer=replica__set__pb2.OneString.FromString,
                     response_serializer=replica__set__pb2.OneString.SerializeToString,
             ),
@@ -158,23 +158,6 @@ class ReplicaSet(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/ReplicaSet/Join',
             replica__set__pb2.JoinConfig.SerializeToString,
-            replica__set__pb2.OneString.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def RemoveNode(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/ReplicaSet/RemoveNode',
-            replica__set__pb2.OneString.SerializeToString,
             replica__set__pb2.OneString.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -225,6 +208,23 @@ class ReplicaSet(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/ReplicaSet/Delete',
+            replica__set__pb2.OneString.SerializeToString,
+            replica__set__pb2.OneString.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Close(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/ReplicaSet/Close',
             replica__set__pb2.OneString.SerializeToString,
             replica__set__pb2.OneString.FromString,
             options, channel_credentials,

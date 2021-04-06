@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\006./node',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11replica_set.proto\"\x18\n\tOneString\x12\x0b\n\x03Msg\x18\x01 \x01(\t\"\"\n\x06KVPair\x12\x0b\n\x03Key\x18\x01 \x01(\t\x12\x0b\n\x03Val\x18\x02 \x01(\t\"a\n\nInitConfig\x12\x0f\n\x07RaftDir\x18\x01 \x01(\t\x12\x10\n\x08RaftAddr\x18\x02 \x01(\t\x12\x10\n\x08StoreDir\x18\x03 \x01(\t\x12\x0e\n\x06Leader\x18\x04 \x01(\x08\x12\x0e\n\x06NodeID\x18\x05 \x01(\t\"*\n\nJoinConfig\x12\x0e\n\x06NodeID\x18\x01 \x01(\t\x12\x0c\n\x04\x41\x64\x64r\x18\x02 \x01(\t2\xdd\x01\n\nReplicaSet\x12!\n\x04Init\x12\x0b.InitConfig\x1a\n.OneString\"\x00\x12!\n\x04Join\x12\x0b.JoinConfig\x1a\n.OneString\"\x00\x12&\n\nRemoveNode\x12\n.OneString\x1a\n.OneString\"\x00\x12\x1f\n\x03Get\x12\n.OneString\x1a\n.OneString\"\x00\x12\x1c\n\x03Put\x12\x07.KVPair\x1a\n.OneString\"\x00\x12\"\n\x06\x44\x65lete\x12\n.OneString\x1a\n.OneString\"\x00\x42\x08Z\x06./nodeb\x06proto3'
+  serialized_pb=b'\n\x11replica_set.proto\"\x18\n\tOneString\x12\x0b\n\x03Msg\x18\x01 \x01(\t\"\"\n\x06KVPair\x12\x0b\n\x03Key\x18\x01 \x01(\t\x12\x0b\n\x03Val\x18\x02 \x01(\t\"a\n\nInitConfig\x12\x0f\n\x07RaftDir\x18\x01 \x01(\t\x12\x10\n\x08RaftAddr\x18\x02 \x01(\t\x12\x10\n\x08StoreDir\x18\x03 \x01(\t\x12\x0e\n\x06Leader\x18\x04 \x01(\x08\x12\x0e\n\x06NodeID\x18\x05 \x01(\t\"*\n\nJoinConfig\x12\x0e\n\x06NodeID\x18\x01 \x01(\t\x12\x0c\n\x04\x41\x64\x64r\x18\x02 \x01(\t2\xd8\x01\n\nReplicaSet\x12!\n\x04Init\x12\x0b.InitConfig\x1a\n.OneString\"\x00\x12!\n\x04Join\x12\x0b.JoinConfig\x1a\n.OneString\"\x00\x12\x1f\n\x03Get\x12\n.OneString\x1a\n.OneString\"\x00\x12\x1c\n\x03Put\x12\x07.KVPair\x1a\n.OneString\"\x00\x12\"\n\x06\x44\x65lete\x12\n.OneString\x1a\n.OneString\"\x00\x12!\n\x05\x43lose\x12\n.OneString\x1a\n.OneString\"\x00\x42\x08Z\x06./nodeb\x06proto3'
 )
 
 
@@ -239,7 +239,7 @@ _REPLICASET = _descriptor.ServiceDescriptor(
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=227,
-  serialized_end=448,
+  serialized_end=443,
   methods=[
   _descriptor.MethodDescriptor(
     name='Init',
@@ -262,19 +262,9 @@ _REPLICASET = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='RemoveNode',
-    full_name='ReplicaSet.RemoveNode',
-    index=2,
-    containing_service=None,
-    input_type=_ONESTRING,
-    output_type=_ONESTRING,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
-  _descriptor.MethodDescriptor(
     name='Get',
     full_name='ReplicaSet.Get',
-    index=3,
+    index=2,
     containing_service=None,
     input_type=_ONESTRING,
     output_type=_ONESTRING,
@@ -284,7 +274,7 @@ _REPLICASET = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='Put',
     full_name='ReplicaSet.Put',
-    index=4,
+    index=3,
     containing_service=None,
     input_type=_KVPAIR,
     output_type=_ONESTRING,
@@ -294,6 +284,16 @@ _REPLICASET = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='Delete',
     full_name='ReplicaSet.Delete',
+    index=4,
+    containing_service=None,
+    input_type=_ONESTRING,
+    output_type=_ONESTRING,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Close',
+    full_name='ReplicaSet.Close',
     index=5,
     containing_service=None,
     input_type=_ONESTRING,

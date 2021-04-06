@@ -5,10 +5,10 @@ option go_package = "./node";
 service ReplicaSet {
     rpc Init(InitConfig) returns (OneString) {}
     rpc Join(JoinConfig) returns (OneString) {}
-    rpc RemoveNode(OneString) returns (OneString) {}
     rpc Get(OneString) returns (OneString) {}
     rpc Put(KVPair) returns (OneString) {}
     rpc Delete(OneString) returns (OneString) {}
+    rpc Close(OneString) returns (OneString) {}
 }
 
 message OneString {

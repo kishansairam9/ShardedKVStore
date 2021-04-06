@@ -20,10 +20,10 @@ const _ = grpc.SupportPackageIsVersion7
 type ReplicaSetClient interface {
 	Init(ctx context.Context, in *InitConfig, opts ...grpc.CallOption) (*OneString, error)
 	Join(ctx context.Context, in *JoinConfig, opts ...grpc.CallOption) (*OneString, error)
-	RemoveNode(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error)
 	Get(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error)
 	Put(ctx context.Context, in *KVPair, opts ...grpc.CallOption) (*OneString, error)
 	Delete(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error)
+	Close(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error)
 }
 
 type replicaSetClient struct {
@@ -46,15 +46,6 @@ func (c *replicaSetClient) Init(ctx context.Context, in *InitConfig, opts ...grp
 func (c *replicaSetClient) Join(ctx context.Context, in *JoinConfig, opts ...grpc.CallOption) (*OneString, error) {
 	out := new(OneString)
 	err := c.cc.Invoke(ctx, "/ReplicaSet/Join", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *replicaSetClient) RemoveNode(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error) {
-	out := new(OneString)
-	err := c.cc.Invoke(ctx, "/ReplicaSet/RemoveNode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,16 +79,25 @@ func (c *replicaSetClient) Delete(ctx context.Context, in *OneString, opts ...gr
 	return out, nil
 }
 
+func (c *replicaSetClient) Close(ctx context.Context, in *OneString, opts ...grpc.CallOption) (*OneString, error) {
+	out := new(OneString)
+	err := c.cc.Invoke(ctx, "/ReplicaSet/Close", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReplicaSetServer is the server API for ReplicaSet service.
 // All implementations must embed UnimplementedReplicaSetServer
 // for forward compatibility
 type ReplicaSetServer interface {
 	Init(context.Context, *InitConfig) (*OneString, error)
 	Join(context.Context, *JoinConfig) (*OneString, error)
-	RemoveNode(context.Context, *OneString) (*OneString, error)
 	Get(context.Context, *OneString) (*OneString, error)
 	Put(context.Context, *KVPair) (*OneString, error)
 	Delete(context.Context, *OneString) (*OneString, error)
+	Close(context.Context, *OneString) (*OneString, error)
 	mustEmbedUnimplementedReplicaSetServer()
 }
 
@@ -111,9 +111,6 @@ func (UnimplementedReplicaSetServer) Init(context.Context, *InitConfig) (*OneStr
 func (UnimplementedReplicaSetServer) Join(context.Context, *JoinConfig) (*OneString, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Join not implemented")
 }
-func (UnimplementedReplicaSetServer) RemoveNode(context.Context, *OneString) (*OneString, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveNode not implemented")
-}
 func (UnimplementedReplicaSetServer) Get(context.Context, *OneString) (*OneString, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
@@ -122,6 +119,9 @@ func (UnimplementedReplicaSetServer) Put(context.Context, *KVPair) (*OneString, 
 }
 func (UnimplementedReplicaSetServer) Delete(context.Context, *OneString) (*OneString, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedReplicaSetServer) Close(context.Context, *OneString) (*OneString, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Close not implemented")
 }
 func (UnimplementedReplicaSetServer) mustEmbedUnimplementedReplicaSetServer() {}
 
@@ -168,24 +168,6 @@ func _ReplicaSet_Join_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ReplicaSetServer).Join(ctx, req.(*JoinConfig))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ReplicaSet_RemoveNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OneString)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReplicaSetServer).RemoveNode(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ReplicaSet/RemoveNode",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReplicaSetServer).RemoveNode(ctx, req.(*OneString))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -244,6 +226,24 @@ func _ReplicaSet_Delete_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReplicaSet_Close_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OneString)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReplicaSetServer).Close(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ReplicaSet/Close",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReplicaSetServer).Close(ctx, req.(*OneString))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReplicaSet_ServiceDesc is the grpc.ServiceDesc for ReplicaSet service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -260,10 +260,6 @@ var ReplicaSet_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ReplicaSet_Join_Handler,
 		},
 		{
-			MethodName: "RemoveNode",
-			Handler:    _ReplicaSet_RemoveNode_Handler,
-		},
-		{
 			MethodName: "Get",
 			Handler:    _ReplicaSet_Get_Handler,
 		},
@@ -274,6 +270,10 @@ var ReplicaSet_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _ReplicaSet_Delete_Handler,
+		},
+		{
+			MethodName: "Close",
+			Handler:    _ReplicaSet_Close_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
