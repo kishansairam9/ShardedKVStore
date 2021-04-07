@@ -1,0 +1,179 @@
+2021-04-08T02:29:11.931+0530 [INFO]  raft: initial configuration: index=9 servers="[{Suffrage:Voter ID:1 Address:localhost:37690} {Suffrage:Voter ID:2 Address:localhost:37691} {Suffrage:Voter ID:3 Address:localhost:37692} {Suffrage:Voter ID:4 Address:localhost:37693} {Suffrage:Voter ID:0 Address:localhost:37689}]"
+2021-04-08T02:29:11.932+0530 [INFO]  raft: entering follower state: follower="Node at 127.0.0.1:37689 [Follower]" leader=
+2021-04-08T02:29:13.734+0530 [WARN]  raft: heartbeat timeout reached, starting election: last-leader=
+2021-04-08T02:29:13.734+0530 [INFO]  raft: entering candidate state: node="Node at 127.0.0.1:37689 [Candidate]" term=11
+2021-04-08T02:29:13.785+0530 [ERROR] raft: failed to make requestVote RPC: target="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:13.785+0530 [ERROR] raft: failed to make requestVote RPC: target="{Voter 3 localhost:37692}" error="dial tcp [::1]:37692: connect: connection refused"
+2021-04-08T02:29:13.785+0530 [ERROR] raft: failed to make requestVote RPC: target="{Voter 2 localhost:37691}" error="dial tcp [::1]:37691: connect: connection refused"
+2021-04-08T02:29:13.935+0530 [DEBUG] raft: votes: needed=3
+2021-04-08T02:29:13.935+0530 [DEBUG] raft: vote granted: from=0 term=11 tally=1
+2021-04-08T02:29:13.981+0530 [DEBUG] raft: vote granted: from=1 term=11 tally=2
+2021-04-08T02:29:15.766+0530 [WARN]  raft: Election timeout reached, restarting election
+2021-04-08T02:29:15.766+0530 [INFO]  raft: entering candidate state: node="Node at 127.0.0.1:37689 [Candidate]" term=12
+2021-04-08T02:29:15.815+0530 [ERROR] raft: failed to make requestVote RPC: target="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:15.971+0530 [DEBUG] raft: votes: needed=3
+2021-04-08T02:29:15.971+0530 [DEBUG] raft: vote granted: from=0 term=12 tally=1
+2021-04-08T02:29:16.126+0530 [DEBUG] raft: vote granted: from=1 term=12 tally=2
+2021-04-08T02:29:16.145+0530 [DEBUG] raft: vote granted: from=2 term=12 tally=3
+2021-04-08T02:29:16.145+0530 [INFO]  raft: election won: tally=3
+2021-04-08T02:29:16.145+0530 [INFO]  raft: entering leader state: leader="Node at 127.0.0.1:37689 [Leader]"
+2021-04-08T02:29:16.145+0530 [INFO]  raft: added peer, starting replication: peer=1
+2021-04-08T02:29:16.145+0530 [INFO]  raft: added peer, starting replication: peer=2
+2021-04-08T02:29:16.145+0530 [INFO]  raft: added peer, starting replication: peer=3
+2021-04-08T02:29:16.145+0530 [INFO]  raft: added peer, starting replication: peer=4
+2021-04-08T02:29:16.146+0530 [INFO]  raft: pipelining replication: peer="{Voter 1 localhost:37690}"
+2021-04-08T02:29:16.146+0530 [INFO]  raft: pipelining replication: peer="{Voter 2 localhost:37691}"
+2021-04-08T02:29:16.146+0530 [INFO]  raft: pipelining replication: peer="{Voter 3 localhost:37692}"
+2021-04-08T02:29:16.147+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.228+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.337+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.344+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.467+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.477+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.577+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.604+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.708+0530 [WARN]  raft: failed to contact: server-id=4 time=563.50527ms
+2021-04-08T02:29:16.731+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.755+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.958+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:16.984+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:17.172+0530 [WARN]  raft: failed to contact: server-id=4 time=1.027411686s
+2021-04-08T02:29:17.237+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:17.364+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:17.511+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:17.637+0530 [WARN]  raft: failed to contact: server-id=4 time=1.491552428s
+2021-04-08T02:29:18.023+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:18.069+0530 [DEBUG] raft: failed to contact: server-id=4 time=1.923616511s
+2021-04-08T02:29:18.106+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:18.523+0530 [DEBUG] raft: failed to contact: server-id=4 time=2.377863212s
+2021-04-08T02:29:18.790+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:18.967+0530 [DEBUG] raft: failed to contact: server-id=4 time=2.821597636s
+2021-04-08T02:29:19.411+0530 [DEBUG] raft: failed to contact: server-id=4 time=3.265806891s
+2021-04-08T02:29:19.450+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:19.841+0530 [DEBUG] raft: failed to contact: server-id=4 time=3.695803128s
+2021-04-08T02:29:20.181+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:20.263+0530 [DEBUG] raft: failed to contact: server-id=4 time=4.118241155s
+2021-04-08T02:29:20.683+0530 [DEBUG] raft: failed to contact: server-id=4 time=4.53798943s
+2021-04-08T02:29:21.116+0530 [DEBUG] raft: failed to contact: server-id=4 time=4.97081875s
+2021-04-08T02:29:21.566+0530 [DEBUG] raft: failed to contact: server-id=4 time=5.420897156s
+2021-04-08T02:29:21.994+0530 [DEBUG] raft: failed to contact: server-id=4 time=5.848895862s
+2021-04-08T02:29:22.091+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:22.446+0530 [DEBUG] raft: failed to contact: server-id=4 time=6.300497754s
+2021-04-08T02:29:22.894+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:22.897+0530 [DEBUG] raft: failed to contact: server-id=4 time=6.751483281s
+2021-04-08T02:29:23.312+0530 [DEBUG] raft: failed to contact: server-id=4 time=7.167068618s
+2021-04-08T02:29:23.723+0530 [DEBUG] raft: failed to contact: server-id=4 time=7.577533727s
+2021-04-08T02:29:24.145+0530 [DEBUG] raft: failed to contact: server-id=4 time=7.99979325s
+2021-04-08T02:29:24.627+0530 [DEBUG] raft: failed to contact: server-id=4 time=8.481325914s
+2021-04-08T02:29:25.066+0530 [DEBUG] raft: failed to contact: server-id=4 time=8.920903631s
+2021-04-08T02:29:25.499+0530 [DEBUG] raft: failed to contact: server-id=4 time=9.353982818s
+2021-04-08T02:29:25.955+0530 [DEBUG] raft: failed to contact: server-id=4 time=9.81013359s
+2021-04-08T02:29:26.409+0530 [DEBUG] raft: failed to contact: server-id=4 time=10.263341905s
+2021-04-08T02:29:26.826+0530 [DEBUG] raft: failed to contact: server-id=4 time=10.680684543s
+2021-04-08T02:29:27.280+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:27.288+0530 [DEBUG] raft: failed to contact: server-id=4 time=11.1426071s
+2021-04-08T02:29:27.754+0530 [DEBUG] raft: failed to contact: server-id=4 time=11.609056487s
+2021-04-08T02:29:28.149+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:28.199+0530 [DEBUG] raft: failed to contact: server-id=4 time=12.053892224s
+2021-04-08T02:29:28.633+0530 [DEBUG] raft: failed to contact: server-id=4 time=12.487750047s
+2021-04-08T02:29:29.095+0530 [DEBUG] raft: failed to contact: server-id=4 time=12.949754738s
+2021-04-08T02:29:29.546+0530 [DEBUG] raft: failed to contact: server-id=4 time=13.400716052s
+2021-04-08T02:29:29.985+0530 [DEBUG] raft: failed to contact: server-id=4 time=13.839346258s
+2021-04-08T02:29:30.468+0530 [DEBUG] raft: failed to contact: server-id=4 time=14.322571073s
+2021-04-08T02:29:30.940+0530 [DEBUG] raft: failed to contact: server-id=4 time=14.794375358s
+2021-04-08T02:29:31.416+0530 [DEBUG] raft: failed to contact: server-id=4 time=15.270342935s
+2021-04-08T02:29:31.883+0530 [DEBUG] raft: failed to contact: server-id=4 time=15.737184536s
+2021-04-08T02:29:32.329+0530 [DEBUG] raft: failed to contact: server-id=4 time=16.183326779s
+2021-04-08T02:29:32.782+0530 [DEBUG] raft: failed to contact: server-id=4 time=16.636347859s
+2021-04-08T02:29:33.253+0530 [DEBUG] raft: failed to contact: server-id=4 time=17.107858194s
+2021-04-08T02:29:33.719+0530 [DEBUG] raft: failed to contact: server-id=4 time=17.572976329s
+2021-04-08T02:29:34.196+0530 [DEBUG] raft: failed to contact: server-id=4 time=18.05032276s
+2021-04-08T02:29:34.670+0530 [DEBUG] raft: failed to contact: server-id=4 time=18.524709061s
+2021-04-08T02:29:35.118+0530 [DEBUG] raft: failed to contact: server-id=4 time=18.972390073s
+2021-04-08T02:29:35.576+0530 [DEBUG] raft: failed to contact: server-id=4 time=19.430491981s
+2021-04-08T02:29:36.023+0530 [DEBUG] raft: failed to contact: server-id=4 time=19.877795473s
+2021-04-08T02:29:36.446+0530 [DEBUG] raft: failed to contact: server-id=4 time=20.300635491s
+2021-04-08T02:29:36.891+0530 [DEBUG] raft: failed to contact: server-id=4 time=20.745362533s
+2021-04-08T02:29:37.344+0530 [DEBUG] raft: failed to contact: server-id=4 time=21.198894035s
+2021-04-08T02:29:37.585+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:37.777+0530 [DEBUG] raft: failed to contact: server-id=4 time=21.63093498s
+2021-04-08T02:29:38.245+0530 [DEBUG] raft: failed to contact: server-id=4 time=22.09892526s
+2021-04-08T02:29:38.559+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:38.703+0530 [DEBUG] raft: failed to contact: server-id=4 time=22.557106005s
+2021-04-08T02:29:39.112+0530 [DEBUG] raft: failed to contact: server-id=4 time=22.96682634s
+2021-04-08T02:29:39.555+0530 [DEBUG] raft: failed to contact: server-id=4 time=23.409257644s
+2021-04-08T02:29:40.047+0530 [DEBUG] raft: failed to contact: server-id=4 time=23.901471144s
+2021-04-08T02:29:40.495+0530 [DEBUG] raft: failed to contact: server-id=4 time=24.349733594s
+2021-04-08T02:29:40.936+0530 [DEBUG] raft: failed to contact: server-id=4 time=24.790530608s
+2021-04-08T02:29:41.408+0530 [DEBUG] raft: failed to contact: server-id=4 time=25.262662854s
+2021-04-08T02:29:41.872+0530 [DEBUG] raft: failed to contact: server-id=4 time=25.725932924s
+2021-04-08T02:29:42.283+0530 [DEBUG] raft: failed to contact: server-id=4 time=26.13741137s
+2021-04-08T02:29:42.735+0530 [DEBUG] raft: failed to contact: server-id=4 time=26.588934855s
+2021-04-08T02:29:43.212+0530 [DEBUG] raft: failed to contact: server-id=4 time=27.066327223s
+2021-04-08T02:29:43.703+0530 [DEBUG] raft: failed to contact: server-id=4 time=27.55726838s
+2021-04-08T02:29:44.167+0530 [DEBUG] raft: failed to contact: server-id=4 time=28.020823743s
+2021-04-08T02:29:44.619+0530 [DEBUG] raft: failed to contact: server-id=4 time=28.472775104s
+2021-04-08T02:29:45.039+0530 [DEBUG] raft: failed to contact: server-id=4 time=28.893683469s
+2021-04-08T02:29:45.451+0530 [DEBUG] raft: failed to contact: server-id=4 time=29.3053115s
+2021-04-08T02:29:45.917+0530 [DEBUG] raft: failed to contact: server-id=4 time=29.770679401s
+2021-04-08T02:29:46.312+0530 [DEBUG] raft: failed to contact: server-id=4 time=30.166211962s
+2021-04-08T02:29:46.746+0530 [DEBUG] raft: failed to contact: server-id=4 time=30.599952189s
+2021-04-08T02:29:47.170+0530 [DEBUG] raft: failed to contact: server-id=4 time=31.023887195s
+2021-04-08T02:29:47.631+0530 [DEBUG] raft: failed to contact: server-id=4 time=31.485356952s
+2021-04-08T02:29:47.911+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:48.060+0530 [DEBUG] raft: failed to contact: server-id=4 time=31.913899231s
+2021-04-08T02:29:48.496+0530 [DEBUG] raft: failed to contact: server-id=4 time=32.349933874s
+2021-04-08T02:29:48.934+0530 [DEBUG] raft: failed to contact: server-id=4 time=32.788513143s
+2021-04-08T02:29:48.942+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:49.417+0530 [DEBUG] raft: failed to contact: server-id=4 time=33.270765234s
+2021-04-08T02:29:49.873+0530 [DEBUG] raft: failed to contact: server-id=4 time=33.7268096s
+2021-04-08T02:29:50.320+0530 [DEBUG] raft: failed to contact: server-id=4 time=34.174307383s
+2021-04-08T02:29:50.749+0530 [DEBUG] raft: failed to contact: server-id=4 time=34.602693706s
+2021-04-08T02:29:51.195+0530 [DEBUG] raft: failed to contact: server-id=4 time=35.048851987s
+2021-04-08T02:29:51.688+0530 [DEBUG] raft: failed to contact: server-id=4 time=35.542442563s
+2021-04-08T02:29:52.158+0530 [DEBUG] raft: failed to contact: server-id=4 time=36.011771893s
+2021-04-08T02:29:52.634+0530 [DEBUG] raft: failed to contact: server-id=4 time=36.487782863s
+2021-04-08T02:29:53.067+0530 [DEBUG] raft: failed to contact: server-id=4 time=36.921310416s
+2021-04-08T02:29:53.490+0530 [DEBUG] raft: failed to contact: server-id=4 time=37.343568406s
+2021-04-08T02:29:53.938+0530 [DEBUG] raft: failed to contact: server-id=4 time=37.791699931s
+2021-04-08T02:29:54.405+0530 [DEBUG] raft: failed to contact: server-id=4 time=38.259235509s
+2021-04-08T02:29:54.869+0530 [DEBUG] raft: failed to contact: server-id=4 time=38.722387076s
+2021-04-08T02:29:55.324+0530 [DEBUG] raft: failed to contact: server-id=4 time=39.178131713s
+2021-04-08T02:29:55.786+0530 [DEBUG] raft: failed to contact: server-id=4 time=39.640170567s
+2021-04-08T02:29:56.220+0530 [DEBUG] raft: failed to contact: server-id=4 time=40.074251405s
+2021-04-08T02:29:56.661+0530 [DEBUG] raft: failed to contact: server-id=4 time=40.514863868s
+2021-04-08T02:29:57.105+0530 [DEBUG] raft: failed to contact: server-id=4 time=40.958371471s
+2021-04-08T02:29:57.544+0530 [DEBUG] raft: failed to contact: server-id=4 time=41.398042146s
+2021-04-08T02:29:57.975+0530 [DEBUG] raft: failed to contact: server-id=4 time=41.828973358s
+2021-04-08T02:29:58.255+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:58.413+0530 [DEBUG] raft: failed to contact: server-id=4 time=42.266440651s
+2021-04-08T02:29:58.825+0530 [DEBUG] raft: failed to contact: server-id=4 time=42.679099222s
+2021-04-08T02:29:59.262+0530 [DEBUG] raft: failed to contact: server-id=4 time=43.115914575s
+2021-04-08T02:29:59.359+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:29:59.707+0530 [DEBUG] raft: failed to contact: server-id=4 time=43.561085468s
+2021-04-08T02:30:00.147+0530 [DEBUG] raft: failed to contact: server-id=4 time=44.000472701s
+2021-04-08T02:30:00.595+0530 [DEBUG] raft: failed to contact: server-id=4 time=44.449046525s
+2021-04-08T02:30:01.037+0530 [DEBUG] raft: failed to contact: server-id=4 time=44.890666079s
+2021-04-08T02:30:01.484+0530 [DEBUG] raft: failed to contact: server-id=4 time=45.337549005s
+2021-04-08T02:30:01.917+0530 [DEBUG] raft: failed to contact: server-id=4 time=45.771080728s
+2021-04-08T02:30:02.389+0530 [DEBUG] raft: failed to contact: server-id=4 time=46.243044046s
+2021-04-08T02:30:02.836+0530 [DEBUG] raft: failed to contact: server-id=4 time=46.689838763s
+2021-04-08T02:30:03.272+0530 [DEBUG] raft: failed to contact: server-id=4 time=47.125838972s
+2021-04-08T02:30:03.699+0530 [DEBUG] raft: failed to contact: server-id=4 time=47.552865492s
+2021-04-08T02:30:04.138+0530 [DEBUG] raft: failed to contact: server-id=4 time=47.991955164s
+2021-04-08T02:30:04.589+0530 [DEBUG] raft: failed to contact: server-id=4 time=48.442504506s
+2021-04-08T02:30:05.046+0530 [DEBUG] raft: failed to contact: server-id=4 time=48.899824072s
+2021-04-08T02:30:05.516+0530 [DEBUG] raft: failed to contact: server-id=4 time=49.369242654s
+2021-04-08T02:30:06.002+0530 [DEBUG] raft: failed to contact: server-id=4 time=49.855440898s
+2021-04-08T02:30:06.431+0530 [DEBUG] raft: failed to contact: server-id=4 time=50.28455611s
+2021-04-08T02:30:06.892+0530 [DEBUG] raft: failed to contact: server-id=4 time=50.745925496s
+2021-04-08T02:30:07.352+0530 [DEBUG] raft: failed to contact: server-id=4 time=51.205866171s
+2021-04-08T02:30:07.752+0530 [DEBUG] raft: failed to contact: server-id=4 time=51.605460567s
+2021-04-08T02:30:08.204+0530 [DEBUG] raft: failed to contact: server-id=4 time=52.057467235s
+2021-04-08T02:30:08.649+0530 [DEBUG] raft: failed to contact: server-id=4 time=52.502554438s
+2021-04-08T02:30:08.660+0530 [ERROR] raft: failed to appendEntries to: peer="{Voter 4 localhost:37693}" error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:30:09.092+0530 [DEBUG] raft: failed to contact: server-id=4 time=52.945429537s
+2021-04-08T02:30:09.550+0530 [DEBUG] raft: failed to contact: server-id=4 time=53.403282362s
+2021-04-08T02:30:09.735+0530 [ERROR] raft: failed to heartbeat to: peer=localhost:37693 error="dial tcp [::1]:37693: connect: connection refused"
+2021-04-08T02:30:10.020+0530 [DEBUG] raft: failed to contact: server-id=4 time=53.873777196s
+2021-04-08T02:30:10.444+0530 [DEBUG] raft: failed to contact: server-id=4 time=54.297639413s

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+service KVStore {
+    rpc Get(String) returns (ValueReturn) {}
+    rpc Delete(String) returns (Status) {}
+    rpc Put(KeyValuePair) returns (Status) {}
+}
+
+message String {
+    string Data = 1;
+}
+
+message ValueReturn {
+    bool Success = 1;
+    bool Exists = 2;
+    bool Data = 3;
+}
+
+message KeyValuePair {
+    string Key = 1;
+    string Value = 2;
+}
+
+message Status {
+    bool Success = 1;
+    string Error = 2;
+}

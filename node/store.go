@@ -2,7 +2,6 @@ package node
 
 import (
 	"encoding/json"
-	"fmt"
 	"net"
 	"os"
 	"path/filepath"
@@ -153,8 +152,6 @@ func (s *Store) Get(key string) string {
 	// No need to do apply on FSM as no need to log
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	fmt.Println("Trying to get ", key)
-	fmt.Println("Current kv ", s.kv)
 	val, err := s.kv.Get([]byte(key))
 	if err != nil {
 		return "ERR:Couldn't get value\n" + err.Error()
