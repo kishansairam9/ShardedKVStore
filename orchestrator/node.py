@@ -98,7 +98,7 @@ class Node:
         return msg
 
     def force_kill(self):
-        print(f"Called force kill and respawn kill an node id {self.node_id}")
+        print(f"Called force kill and respawn an node id {self.node_id}")
         self.log_file.close()
         self.process.kill()
 
@@ -107,9 +107,9 @@ class Node:
         while True:
             # Wait for process to start
             try:
-                print(self.init(self.raft_dir, self.raft_port, self.store_dir, self.node_id), f"at node_id {self.node_id}")
+                print(self.init(self.raft_dir, self.raft_port, self.store_dir, self.node_id, False), f"at node_id {self.node_id}")
                 break
-            except:
+            except Exception as e:
                 pass
         print(f"Succesfully killed and respawned node {self.node_id}")
 

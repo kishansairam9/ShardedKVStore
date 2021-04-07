@@ -7,22 +7,22 @@ from typing import List
 import socket
 import grpc
 
-# def is_port_not_free(port):
-#     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-#         return s.connect_ex(('localhost', port)) == 0
+def is_port_not_free(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
 
-# def makesure_ports_valid(ports: List[int]):
-#     curr_max = max(ports)
-#     not_valid = list(map(is_port_not_free, ports))
-#     for i in range(len(ports)):
-#         if not_valid[i]:
-#             curr = curr_max + 1
-#             while is_port_not_free(curr):
-#                 curr +=1
-#             ports[i] = curr
-#             curr_max = curr
+def makesure_ports_valid(ports: List[int]):
+    curr_max = max(ports)
+    not_valid = list(map(is_port_not_free, ports))
+    for i in range(len(ports)):
+        if not_valid[i]:
+            curr = curr_max + 1
+            while is_port_not_free(curr):
+                curr +=1
+            ports[i] = curr
+            curr_max = curr
 
-default_some = {
+test_some = { # Used for purpose of manual testing
     'replica_count': 5,
     'log_dir_path': 'test/log',
     'raft_dir_path': 'test/raft',
@@ -32,20 +32,22 @@ default_some = {
 class Shard:
     '''Implements Shard as a replica set of nodes'''
     
-    def __init__(self, replica_count: int, log_dir_path: str, raft_dir_path: str, store_dir_path: str, base_grpc_port: int = None, base_raft_port: int = 34568, wait_time: int = 5):
-        # Clear directories and make them valid
+    def __init__(self, replica_count: int, log_dir_path: str, raft_dir_path: str, store_dir_path: str, base_raft_port: int = 34568, base_grpc_port: int = None, wait_time: int = 5):
+        # Make sure they are valid paths
         os.system(f"mkdir -p {log_dir_path} {store_dir_path} {raft_dir_path}")
         nodes: dict = {}
-        # TODO: Add a note that if base raft ports are random recovery from previous raft logs is not possible
         # NOTE: For recovery to be possible previous set of raft ports must be same as current set of ports
+        # TODO: Add a note that if base raft ports are random recovery from previous raft logs is not possible
         if base_grpc_port is None:
             base_grpc_port = random.randint(20000, 30000-1) # Choose random base port from registered ports
         if base_raft_port is None:
             base_raft_port = random.randint(30000, 40000) # Choose random base port from registered ports
         grpc_ports = [base_grpc_port + i for i in range(replica_count)]
         raft_ports = [base_raft_port + i for i in range(replica_count)]
-        # makesure_ports_valid(grpc_ports)
-        # makesure_ports_valid(raft_ports)
+        makesure_ports_valid(grpc_ports)
+        for i in raft_ports:
+            if is_port_not_free(i):
+                raise ValueError(f"Raft port {i} not free, can't proceed forward make sure raft ports are free if passed base_raft_port as None, or else try invoking again with different base raft port")
         self.log_dir_path = log_dir_path
         self.wait_time = wait_time
         found_last_log = False
@@ -54,7 +56,7 @@ class Shard:
             with open(f"{log_dir_path}/last_leader.log", 'r') as f:
                 self.leader_id = int(f.readline().strip())
                 if self.leader_id not in range(replica_count):
-                    raise ValueError
+                    raise ValueError("Leader id from log greater not in range of ids for given replica count")
                 found_last_log = True
         except:
             # Choose random leader initially
@@ -78,6 +80,7 @@ class Shard:
         self.nodes = nodes
         sleep(wait_time) # Need to wait for inital raft setup to place
         self.update_leader(True)
+        print(f"Joining nodes to leader node {self.leader_id}")
         for id in nodes.keys():
             if id == self.leader_id:
                 continue
