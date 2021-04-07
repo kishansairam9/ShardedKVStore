@@ -13,7 +13,7 @@ message String {
 message ValueReturn {
     bool Success = 1;
     bool Exists = 2;
-    bool Data = 3;
+    string Data = 3;
 }
 
 message KeyValuePair {

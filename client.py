@@ -18,7 +18,7 @@ class RequestWrapper:
 
     def put(self, key: str, val: str):
         request = kvstore_pb2.KeyValuePair(Key=key, Value=val)
-        resp = self.stub.Get(request)
+        resp = self.stub.Put(request)
         if resp.Success:
             return
         raise Exception(resp.Data)

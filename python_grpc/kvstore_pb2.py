@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\rkvstore.proto\"\x16\n\x06String\x12\x0c\n\x04\x44\x61ta\x18\x01 \x01(\t\"<\n\x0bValueReturn\x12\x0f\n\x07Success\x18\x01 \x01(\x08\x12\x0e\n\x06\x45xists\x18\x02 \x01(\x08\x12\x0c\n\x04\x44\x61ta\x18\x03 \x01(\x08\"*\n\x0cKeyValuePair\x12\x0b\n\x03Key\x18\x01 \x01(\t\x12\r\n\x05Value\x18\x02 \x01(\t\"(\n\x06Status\x12\x0f\n\x07Success\x18\x01 \x01(\x08\x12\r\n\x05\x45rror\x18\x02 \x01(\t2h\n\x07KVStore\x12\x1e\n\x03Get\x12\x07.String\x1a\x0c.ValueReturn\"\x00\x12\x1c\n\x06\x44\x65lete\x12\x07.String\x1a\x07.Status\"\x00\x12\x1f\n\x03Put\x12\r.KeyValuePair\x1a\x07.Status\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\rkvstore.proto\"\x16\n\x06String\x12\x0c\n\x04\x44\x61ta\x18\x01 \x01(\t\"<\n\x0bValueReturn\x12\x0f\n\x07Success\x18\x01 \x01(\x08\x12\x0e\n\x06\x45xists\x18\x02 \x01(\x08\x12\x0c\n\x04\x44\x61ta\x18\x03 \x01(\t\"*\n\x0cKeyValuePair\x12\x0b\n\x03Key\x18\x01 \x01(\t\x12\r\n\x05Value\x18\x02 \x01(\t\"(\n\x06Status\x12\x0f\n\x07Success\x18\x01 \x01(\x08\x12\r\n\x05\x45rror\x18\x02 \x01(\t2h\n\x07KVStore\x12\x1e\n\x03Get\x12\x07.String\x1a\x0c.ValueReturn\"\x00\x12\x1c\n\x06\x44\x65lete\x12\x07.String\x1a\x07.Status\"\x00\x12\x1f\n\x03Put\x12\r.KeyValuePair\x1a\x07.Status\"\x00\x62\x06proto3'
 )
 
 
@@ -81,8 +81,8 @@ _VALUERETURN = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='Data', full_name='ValueReturn.Data', index=2,
-      number=3, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
