@@ -1,3 +1,0 @@
-2021-04-08T02:14:57.264+0530 [INFO]  raft: initial configuration: index=6 servers="[{Suffrage:Voter ID:0 Address:127.0.0.1:37694} {Suffrage:Voter ID:1 Address:localhost:37695} {Suffrage:Voter ID:2 Address:localhost:37696} {Suffrage:Voter ID:3 Address:localhost:37697} {Suffrage:Voter ID:4 Address:localhost:37698}]"
-2021-04-08T02:14:57.266+0530 [INFO]  raft: entering follower state: follower="Node at 127.0.0.1:37696 [Follower]" leader=
-2021-04-08T02:14:58.023+0530 [DEBUG] raft: lost leadership because received a requestVote with a newer term
