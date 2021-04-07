@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\006./node',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0fnode_grpc.proto\"\x18\n\tOneString\x12\x0b\n\x03Msg\x18\x01 \x01(\t\"\"\n\x06KVPair\x12\x0b\n\x03Key\x18\x01 \x01(\t\x12\x0b\n\x03Val\x18\x02 \x01(\t\"Q\n\nInitConfig\x12\x0f\n\x07RaftDir\x18\x01 \x01(\t\x12\x10\n\x08RaftAddr\x18\x02 \x01(\t\x12\x10\n\x08StoreDir\x18\x03 \x01(\t\x12\x0e\n\x06NodeID\x18\x04 \x01(\t\"*\n\nJoinConfig\x12\x0e\n\x06NodeID\x18\x01 \x01(\t\x12\x0c\n\x04\x41\x64\x64r\x18\x02 \x01(\t2\xf8\x01\n\x04Node\x12!\n\x04Init\x12\x0b.InitConfig\x1a\n.OneString\"\x00\x12!\n\x04Join\x12\x0b.JoinConfig\x1a\n.OneString\"\x00\x12\x1f\n\x03Get\x12\n.OneString\x1a\n.OneString\"\x00\x12\x1c\n\x03Put\x12\x07.KVPair\x1a\n.OneString\"\x00\x12\"\n\x06\x44\x65lete\x12\n.OneString\x1a\n.OneString\"\x00\x12!\n\x05\x43lose\x12\n.OneString\x1a\n.OneString\"\x00\x12$\n\x08IsLeader\x12\n.OneString\x1a\n.OneString\"\x00\x42\x08Z\x06./nodeb\x06proto3'
+  serialized_pb=b'\n\x0fnode_grpc.proto\"\x18\n\tOneString\x12\x0b\n\x03Msg\x18\x01 \x01(\t\"\"\n\x06KVPair\x12\x0b\n\x03Key\x18\x01 \x01(\t\x12\x0b\n\x03Val\x18\x02 \x01(\t\"x\n\nInitConfig\x12\x0f\n\x07RaftDir\x18\x01 \x01(\t\x12\x10\n\x08RaftAddr\x18\x02 \x01(\t\x12\x10\n\x08StoreDir\x18\x03 \x01(\t\x12\x0e\n\x06NodeID\x18\x04 \x01(\t\x12\x0e\n\x06Leader\x18\x05 \x01(\x08\x12\x15\n\rClearStoreDir\x18\x06 \x01(\x08\"*\n\nJoinConfig\x12\x0e\n\x06NodeID\x18\x01 \x01(\t\x12\x0c\n\x04\x41\x64\x64r\x18\x02 \x01(\t2\xf8\x01\n\x04Node\x12!\n\x04Init\x12\x0b.InitConfig\x1a\n.OneString\"\x00\x12!\n\x04Join\x12\x0b.JoinConfig\x1a\n.OneString\"\x00\x12\x1f\n\x03Get\x12\n.OneString\x1a\n.OneString\"\x00\x12\x1c\n\x03Put\x12\x07.KVPair\x1a\n.OneString\"\x00\x12\"\n\x06\x44\x65lete\x12\n.OneString\x1a\n.OneString\"\x00\x12!\n\x05\x43lose\x12\n.OneString\x1a\n.OneString\"\x00\x12$\n\x08IsLeader\x12\n.OneString\x1a\n.OneString\"\x00\x42\x08Z\x06./nodeb\x06proto3'
 )
 
 
@@ -132,6 +132,20 @@ _INITCONFIG = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='Leader', full_name='InitConfig.Leader', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='ClearStoreDir', full_name='InitConfig.ClearStoreDir', index=5,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -145,7 +159,7 @@ _INITCONFIG = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=81,
-  serialized_end=162,
+  serialized_end=201,
 )
 
 
@@ -183,8 +197,8 @@ _JOINCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=164,
-  serialized_end=206,
+  serialized_start=203,
+  serialized_end=245,
 )
 
 DESCRIPTOR.message_types_by_name['OneString'] = _ONESTRING
@@ -231,8 +245,8 @@ _NODE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=209,
-  serialized_end=457,
+  serialized_start=248,
+  serialized_end=496,
   methods=[
   _descriptor.MethodDescriptor(
     name='Init',

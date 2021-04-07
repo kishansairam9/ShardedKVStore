@@ -2,6 +2,7 @@ package node
 
 import (
 	"encoding/json"
+	"fmt"
 	"net"
 	"os"
 	"path/filepath"
@@ -34,10 +35,19 @@ const (
 	raftTimeout         = 10 * time.Second
 )
 
-func New(storeDir string) (*Store, string) {
+func New(storeDir string, clearDir bool) (*Store, string) {
+	// Tries to continue from directory if it exists
+	if clearDir {
+		os.RemoveAll(storeDir)
+		os.MkdirAll(storeDir, 0700)
+	}
 	db, err := bitcask.Open(storeDir)
 	if err != nil {
-		return nil, "ERR:Failed to create KV Store database at given directory, try different\n" + err.Error()
+		if clearDir {
+			return nil, "ERR:Failed to create KV Store database at given directory\n" + err.Error()
+		}
+		// If fails removes content in directory and retries
+		return New(storeDir, true)
 	}
 	return &Store{
 		kv:    db,
@@ -45,7 +55,7 @@ func New(storeDir string) (*Store, string) {
 	}, "SUCCESS:Created KV Store"
 }
 
-func (s *Store) Open(serverID string) string {
+func (s *Store) Open(enableSingle bool, serverID string) string {
 	config := raft.DefaultConfig()
 	config.LocalID = raft.ServerID(serverID)
 
@@ -58,6 +68,8 @@ func (s *Store) Open(serverID string) string {
 	if err != nil {
 		return "ERR:Failed to create TCP Transport\n" + err.Error()
 	}
+	// os.RemoveAll(s.RaftDir)
+	// os.MkdirAll(s.RaftDir, 0700)
 	// Snapshots of fsm
 	snapshots, err := raft.NewFileSnapshotStore(s.RaftDir, retainSnapshotCount, os.Stderr)
 	if err != nil {
@@ -76,16 +88,18 @@ func (s *Store) Open(serverID string) string {
 	}
 	s.raft = ra
 
-	configuration := raft.Configuration{
-		Servers: []raft.Server{
-			{
-				ID:      config.LocalID,
-				Address: transport.LocalAddr(),
+	if enableSingle {
+		configuration := raft.Configuration{
+			Servers: []raft.Server{
+				{
+					ID:      config.LocalID,
+					Address: transport.LocalAddr(),
+				},
 			},
-		},
+		}
+		ra.BootstrapCluster(configuration)
 	}
-	ra.BootstrapCluster(configuration)
-	return "SUCCESS:Opened new store\n"
+	return "SUCCESS:Opened store"
 }
 
 func (s *Store) Close() string {
@@ -110,7 +124,7 @@ func (s *Store) Join(nodeID, addr string) string {
 		if srv.ID == raft.ServerID(nodeID) || srv.Address == raft.ServerAddress(addr) {
 			// In case both are same then no need to do anything
 			if srv.Address == raft.ServerAddress(addr) && srv.ID == raft.ServerID(nodeID) {
-				return "SUCCESS:Done"
+				return "SUCCESS:Node " + nodeID + " at " + addr + " already in raft"
 			}
 
 			future := s.raft.RemoveServer(srv.ID, 0, 0)
@@ -139,6 +153,8 @@ func (s *Store) Get(key string) string {
 	// No need to do apply on FSM as no need to log
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+	fmt.Println("Trying to get ", key)
+	fmt.Println("Current kv ", s.kv)
 	val, err := s.kv.Get([]byte(key))
 	if err != nil {
 		return "ERR:Couldn't get value\n" + err.Error()

@@ -2,12 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/kishansairam9/ShardedKVStore/node"
 	"google.golang.org/grpc"
@@ -20,13 +17,13 @@ type nodeGrpcServer struct {
 
 func (r *nodeGrpcServer) Init(ctx context.Context, config *node.InitConfig) (*node.OneString, error) {
 	var ret node.OneString
-	r.s, ret.Msg = node.New(config.StoreDir)
+	r.s, ret.Msg = node.New(config.StoreDir, config.ClearStoreDir)
 	if r.s == nil {
 		return &ret, nil
 	}
 	r.s.RaftDir = config.RaftDir
 	r.s.RaftBind = config.RaftAddr
-	ret.Msg = r.s.Open(config.NodeID)
+	ret.Msg = r.s.Open(config.Leader, config.NodeID)
 	if ret.Msg[0] == 'E' {
 		r.s = nil
 	}
@@ -106,18 +103,22 @@ func main() {
 
 	node.RegisterNodeServer(grpcServer, &r)
 
-	// Run GPRC Server concurrently and main waits for interrupts to exit gracefully
-	go func() {
-		if err := grpcServer.Serve(lis); err != nil {
-			log.Fatalf("Failed to serve Grpc on port %v\n%v", string(os.Args[1]), err)
-		}
-	}()
-
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
-	<-sigs
-	fmt.Println("\nRecieved terminate signal, closing DB to exit gracefully")
-	if r.s != nil {
-		r.s.Close()
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve Grpc on port %v\n%v", string(os.Args[1]), err)
 	}
+
+	// // Run GPRC Server concurrently and main waits for interrupts to exit gracefully
+	// go func() {
+	// 	if err := grpcServer.Serve(lis); err != nil {
+	// 		log.Fatalf("Failed to serve Grpc on port %v\n%v", string(os.Args[1]), err)
+	// 	}
+	// }()
+
+	// sigs := make(chan os.Signal, 1)
+	// signal.Notify(sigs, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+	// <-sigs
+	// fmt.Println("\nRecieved terminate signal, closing DB to exit gracefully")
+	// if r.s != nil {
+	// 	r.s.Close()
+	// }
 }

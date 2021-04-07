@@ -26,6 +26,8 @@ message InitConfig {
     string RaftAddr = 2;
     string StoreDir = 3;
     string NodeID = 4;
+    bool Leader = 5;
+    bool ClearStoreDir = 6;
 }
 
 message JoinConfig {
