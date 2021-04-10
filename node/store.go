@@ -154,7 +154,7 @@ func (s *Store) Get(key string) string {
 	defer s.mu.RUnlock()
 	val, err := s.kv.Get([]byte(key))
 	if err != nil {
-		return "ERR:Couldn't get value\n" + err.Error()
+		return "ERR:" + err.Error()
 	}
 	return "SUCCESS:" + string(val)
 }

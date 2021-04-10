@@ -1,3 +1,5 @@
+from .utils import *
+
 import os
 import sys
 sys.path.append('..')
@@ -5,9 +7,6 @@ import subprocess
 import grpc
 from python_grpc import node_grpc_pb2_grpc
 from python_grpc import node_grpc_pb2
-from time import sleep
-from .utils import *
-
 
 GO_SERVER_CODE = '/Users/kishanadapa9/Repositories/ShardedKVStore/node_grpc_server.go'
 GO_BUILT_SERVER = '/Users/kishanadapa9/Repositories/ShardedKVStore/node_grpc_server'
@@ -87,6 +86,8 @@ class Node:
         status, msg = decode_response(resp)
         if status == 'ERR':
             raise ReturnedError(msg)
+        if status == 'NONLEADER':
+            raise StaleLeader()
         return msg
 
     def close(self):
@@ -97,21 +98,21 @@ class Node:
             raise ReturnedError(msg)
         return msg
 
-    def force_kill(self):
-        print(f"Called force kill and respawn an node id {self.node_id}")
+    def force_kill(self, print_fn):
+        print_fn(f"Called force kill and respawn an node id {self.node_id}", 'yellow')
         self.log_file.close()
         self.process.kill()
 
-    def force_init(self):
+    def force_init(self, print_fn = print):
         self.__init__(self.grpc_port, self.log_path, self.timeout, reinit=True)
         while True:
             # Wait for process to start
             try:
-                print(self.init(self.raft_dir, self.raft_port, self.store_dir, self.node_id, False), f"at node_id {self.node_id}")
+                print_fn(f"{self.init(self.raft_dir, self.raft_port, self.store_dir, self.node_id, False)} at node_id {self.node_id}", 'green')
                 break
             except Exception as e:
                 pass
-        print(f"Succesfully killed and respawned node {self.node_id}")
+        print_fn(f"Succesfully killed and respawned node {self.node_id}", 'green')
 
     def __del__(self):
         try:

@@ -9,7 +9,16 @@ class RequestWrapper:
 
     def get(self, key: str):
         request = kvstore_pb2.String(Data=key)
-        resp = self.stub.Get(request)
+        nodes_down = False
+        try:
+            resp = self.stub.Get(request)
+        except grpc.RpcError as e:
+            if e.code() == grpc.StatusCode.UNKNOWN:
+                nodes_down = True
+            else:
+                raise Exception(e)
+        if nodes_down:
+            raise Exception("All nodes down for particular Shard, check server logs")
         if resp.Success:
             if resp.Exists:
                 return resp.Data

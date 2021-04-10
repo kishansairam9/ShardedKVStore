@@ -1,7 +1,6 @@
-import sys
-sys.path.append('..')
 from .utils import *
 from .shard import Shard
+
 import hashlib
 
 class Store:
@@ -15,7 +14,7 @@ class Store:
         self.shards = []
         for i in range(shard_cnt):
             suffix = f'/shard{i}'
-            self.shards.append(Shard(replica_cnt, self.log_dir+suffix, self.raft_dir+suffix, self.store_dir+suffix, base_raft_port+i*replica_cnt))
+            self.shards.append(Shard(replica_cnt, self.log_dir+suffix, self.raft_dir+suffix, self.store_dir+suffix, base_raft_port+i*replica_cnt, print_name=f'SHARD {i}'))
 
     def hash_key(self, s):
         return int(hashlib.sha1(s.encode('utf-8')).hexdigest(), 16) % (self.shard_cnt)
