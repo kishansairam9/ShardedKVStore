@@ -130,8 +130,8 @@ class Shard:
             return
         # No one is leader, has more failures than raft can handle!
         # Force kill and respawn all failed processes
-        self.print("Has more failures than raft can handle for write / deletes", 'red')
-        self.print("Force killing all inactive ones and respawning", 'green')
+        self.print("Has more failures than raft can handle", 'red')
+        self.print("Recovering by force killing all inactive ones and respawning", 'green')
         for id in inactive_ones:
             self.nodes[id].force_kill(self.print)
         sleep(self.wait_time)
@@ -144,8 +144,9 @@ class Shard:
         # Try to choose randomly to one of nodes
         to_try = set(self.nodes.keys()) - already_tried
         if len(to_try) == 0:
-            self.print("ERROR: Wasn't able to reach any node through Grpc, check server side printed log to know all nodes offline", 'red')
-            return -1
+            self.print("ERROR: Wasn't able to reach any node through Grpc", 'red')
+            self.update_leader()
+            return self.get(key, set())
         id = random.choice(list(to_try))
         try:
             return self.nodes[id].get(key)
