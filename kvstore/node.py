@@ -8,8 +8,10 @@ import grpc
 from python_grpc import node_grpc_pb2_grpc
 from python_grpc import node_grpc_pb2
 
-GO_SERVER_CODE = '/Users/kishanadapa9/Repositories/ShardedKVStore/node_grpc_server.go'
-GO_BUILT_SERVER = '/Users/kishanadapa9/Repositories/ShardedKVStore/node_grpc_server'
+ABS_REPO_ROOT = '/Users/kishanadapa9/Repositories/ShardedKVStore'
+
+GO_SERVER_CODE = f'{ABS_REPO_ROOT}/node_grpc_server.go'
+GO_BUILT_SERVER = f'{ABS_REPO_ROOT}/node_grpc_server'
 
 os.system(f"cd {'/'+'/'.join(GO_SERVER_CODE.split('/')[:-1])} && go build {GO_SERVER_CODE}")
 

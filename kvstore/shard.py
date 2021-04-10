@@ -140,8 +140,9 @@ class Shard:
         sleep(self.wait_time)
         self.update_leader()
     
-    def get(self, key: str, already_tried: set = set()):
+    def get(self, key: str, already_tried = None):
         # Try to choose randomly to one of nodes
+        already_tried = set() if already_tried is None else already_tried
         to_try = set(self.nodes.keys()) - already_tried
         if len(to_try) == 0:
             self.print("ERROR: Wasn't able to reach any node through Grpc", 'red')

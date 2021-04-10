@@ -1,9 +1,0 @@
-Using https://github.com/prologic/bitcask instead of in memory kv store
-Supports fast access to upto 1M KV Pairs using disk as backing store
-If we want billions of records then should use LevelDB as mentioned here
-https://github.com/prologic/bitcask#is-bitcask-right-for-my-project
-Since we are already sharding choosen bitcask
-
-References
-https://github.com/prologic/bitraft
-https://github.com/otoolep/hraftd
