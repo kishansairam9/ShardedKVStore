@@ -2,9 +2,9 @@
 
 ## Architecture
 
-- Replication implemented using Raft concensus algorithm (used hashicorp's go implementation)
+- Replication implemented using Raft consensus algorithm (used hashicorp's go implementation)
 - Interfaced "node" (each element in replica set) using GRPC from python
-- Each "shard" is implemented as a set of nodes taking part in raft concensus
+- Each "shard" is implemented as a set of nodes taking part in raft consensus
 - "KVStore" is implemented as a set of shards.
 
 ## Data Storage
@@ -78,7 +78,7 @@ optional arguments:
 ## Client
 - Clients interact using GRPC, a wrapper `client.py` is provided to handle GRPC requests to server
 - Import `RequestWrapper` class from `client.py` and use it to perform interactions with KVStore by passing in location of GRPC Server
-- Example
+- Example run from python3 interpreter at root of repo
 ```
 >>> from client import *
 >>> t = RequestWrapper('localhost:7000')
@@ -91,11 +91,10 @@ optional arguments:
 >>> t.get('k3')
 >>> t.get('k1')
 'v1'
->>>
 ```
 
 ## References
 
-- Following repos were refered while implementing replication based on raft concencus
+- Following repos were refered while implementing replication based on raft consensus
     - https://github.com/otoolep/hraftd 
     - https://github.com/prologic/bitraft
