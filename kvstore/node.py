@@ -8,7 +8,7 @@ import grpc
 from python_grpc import node_grpc_pb2_grpc
 from python_grpc import node_grpc_pb2
 
-ABS_REPO_ROOT = '/Users/kishanadapa9/Repositories/ShardedKVStore'
+ABS_REPO_ROOT = os.path.dirname(os.path.realpath(__file__)) + '/..'
 
 GO_SERVER_CODE = f'{ABS_REPO_ROOT}/node_grpc_server.go'
 GO_BUILT_SERVER = f'{ABS_REPO_ROOT}/node_grpc_server'
