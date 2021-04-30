@@ -1,6 +1,6 @@
 # Sharded Key Value Store
 
-## Architecture
+## Design
 
 - Replication implemented using Raft consensus algorithm (used hashicorp's go implementation)
 - Interfaced "node" (each element in replica set) using GRPC from python
