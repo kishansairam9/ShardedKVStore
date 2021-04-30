@@ -1,6 +1,6 @@
 # Sharded Key / Value Store
 
-Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/kishan_sairam_students_iiit_ac_in/EYLDYB0E8UlNvmKRPVjKjO4BDXan5A2L_ENU8czE9Bs7VA?e=yP7yRw) (Enable 720p, lower resolutions look blurry with text)
+Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/kishan_sairam_students_iiit_ac_in/EYLDYB0E8UlNvmKRPVjKjO4BDXan5A2L_ENU8czE9Bs7VA) (Enable 720p, lower resolutions look blurry with text)
 
 ## Problem Statement
 
