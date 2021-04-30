@@ -67,8 +67,7 @@ func (s *Store) Open(enableSingle bool, serverID string) string {
 	if err != nil {
 		return "ERR:Failed to create TCP Transport\n" + err.Error()
 	}
-	// os.RemoveAll(s.RaftDir)
-	// os.MkdirAll(s.RaftDir, 0700)
+	
 	// Snapshots of fsm
 	snapshots, err := raft.NewFileSnapshotStore(s.RaftDir, retainSnapshotCount, os.Stderr)
 	if err != nil {
