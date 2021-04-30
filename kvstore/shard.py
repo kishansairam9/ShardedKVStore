@@ -152,8 +152,8 @@ class Shard:
         try:
             return self.nodes[id].get(key)
         except ReturnedError as e:
-            # Get only fails when there is no key present typically
-            self.print(f"Returning none as failed to get on node {id} at raft port {self.nodes[id].raft_port}: {e}", 'green')
+            # Get only fails when there is no key present 
+            # self.print(f"Returning none as failed to get on node {id} at raft port {self.nodes[id].raft_port}: {e}", 'green')
             return None
         except grpc.RpcError as e:
             if e.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
