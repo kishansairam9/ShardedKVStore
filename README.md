@@ -218,7 +218,14 @@ optional arguments:
 'v1'
 ```
 
+## Tests / Analysis on distributed version
+
+> **TODO** INCOMPLETE :/
+
 ## Tests / Analysis on non-distributed [version](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed)
+
+> **TESTS WERE OBSERVED TO BE MUCH FASTER ON LINUX and machine with moderate number of cores unlike 2 on MacBook Air**
+> **TODO** UPDATE TEST RESULTS ON LINUX
 
 - Sanity Check
     - Using python dict as reference for correctness, performed all operations with checks for correctness
