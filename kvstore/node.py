@@ -1,80 +1,70 @@
 from .utils import *
-
-import os
-import sys
-sys.path.append('..')
-import subprocess
-import grpc
-from python_grpc import node_grpc_pb2_grpc
-from python_grpc import node_grpc_pb2
-
-ABS_REPO_ROOT = os.path.dirname(os.path.realpath(__file__)) + '/..'
-
-GO_SERVER_CODE = f'{ABS_REPO_ROOT}/node_grpc_server.go'
-GO_BUILT_SERVER = f'{ABS_REPO_ROOT}/node_grpc_server'
-
-os.system(f"cd {'/'+'/'.join(GO_SERVER_CODE.split('/')[:-1])} && go build {GO_SERVER_CODE}")
+from .machines import machines, locks
 
 def decode_response(resp):
     # Shouldn't call strip here on any string
     # As it can remove trailing or start spaces in get
-    resp = resp.Msg
     col = resp.index(':')
     status = resp[:col]
     msg = resp[col+1:]
     return status, msg
 
 class Node:
-    '''Implements node interface with GRPC'''
 
-    def __init__(self, grpc_port: int, log_path: str, timeout: int = 2, reinit: bool = False):
-        self.timeout = timeout
-        self.grpc_port = grpc_port
-        self.log_path = log_path
-        self.log_file = open(log_path,  'w+' if reinit else 'w')
-        self.process = subprocess.Popen(f"{GO_BUILT_SERVER} {grpc_port}", shell=True, stdout=self.log_file, stderr=self.log_file)
-        self.channel = grpc.insecure_channel(f'localhost:{grpc_port}')
-        self.stub = node_grpc_pb2_grpc.NodeStub(self.channel)
+    def __init__(self, machine_idx, *args, **kwargs) -> None:
+        # NOTE: Can add better scheduling based on num of nodes currently on each machine
+        self.machine_idx = machine_idx
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            self.idx = machines[self.machine_idx].add_node(*args, **kwargs)
 
-    def init(self, raft_dir: str, raft_port: int, store_dir: str, node_id: int, leader: bool, clear_store_dir: bool = True):
-        self.raft_dir = raft_dir
-        self.raft_port = raft_port
-        self.store_dir = store_dir
-        self.node_id = node_id
-        request = node_grpc_pb2.InitConfig(RaftDir=raft_dir, RaftAddr=f'localhost:{raft_port}', StoreDir=store_dir, NodeID=str(node_id), Leader=leader, ClearStoreDir=clear_store_dir)
-        resp = self.stub.Init(request, timeout=self.timeout)
-        status, msg = decode_response(resp)
+    def init(self, *args, **kwargs):
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            ret_dict = machines[self.machine_idx].init(self.idx, *args, **kwargs)
+        self.raft_dir = f"{ret_dict['ip']}:" + str(ret_dict['raft_dir'])
+        self.store_dir = f"{ret_dict['ip']}:" + str(ret_dict['store_dir'])
+        self.raft_port = f"{ret_dict['ip']}:" + str(ret_dict['raft_port'])
+        self.node_id = ret_dict['node_id']
+        self.timeout = ret_dict['timeout']
+        self.grpc_port = f"{ret_dict['ip']}:" + str(ret_dict['grpc_port'])
+        self.log_path = f"{ret_dict['ip']}:" + str(ret_dict['log_path'])
+        status, msg = decode_response(ret_dict['resp'])
         if status == 'ERR':
             raise ReturnedError(msg)
         return msg
 
     def is_leader(self):
-        request = node_grpc_pb2.OneString(Msg='blah') # Message will be ignored
-        resp = self.stub.IsLeader(request, timeout=self.timeout)
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            resp = machines[self.machine_idx].is_leader(self.idx)
         status, msg = decode_response(resp)
         if status == 'ERR':
             raise ReturnedError(msg)
         return not (status == 'NONLEADER')
     
-    def join(self, node_id: str, raft_port: int):
-        request = node_grpc_pb2.JoinConfig(NodeID=str(node_id), Addr=f'localhost:{raft_port}')
-        resp = self.stub.Join(request, timeout=self.timeout)
+    def join(self, *args, **kwargs):
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            resp = machines[self.machine_idx].join(self.idx, *args, **kwargs)
         status, msg = decode_response(resp)
         if status == 'ERR':
             raise ReturnedError(msg)
         return msg
 
-    def get(self, key: str):
-        request = node_grpc_pb2.OneString(Msg=key)
-        resp = self.stub.Get(request, timeout=self.timeout)
+    def get(self, *args, **kwargs):
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            resp = machines[self.machine_idx].get(self.idx, *args, **kwargs)
         status, msg = decode_response(resp)
         if status == 'ERR':
             raise ReturnedError(msg)
         return msg
     
-    def put(self, key: str, value: str):
-        request = node_grpc_pb2.KVPair(Key=key, Val=value)
-        resp = self.stub.Put(request, timeout=self.timeout)
+    def put(self, *args, **kwargs):
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            resp = machines[self.machine_idx].put(self.idx, *args, **kwargs)
         status, msg = decode_response(resp)
         if status == 'ERR':
             raise ReturnedError(msg)
@@ -82,9 +72,10 @@ class Node:
             raise StaleLeader()
         return msg
 
-    def delete(self, key: str):
-        request = node_grpc_pb2.OneString(Msg=key)
-        resp = self.stub.Delete(request, timeout=self.timeout)
+    def delete(self, *args, **kwargs):
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            resp = machines[self.machine_idx].delete(self.idx, *args, **kwargs)
         status, msg = decode_response(resp)
         if status == 'ERR':
             raise ReturnedError(msg)
@@ -92,34 +83,28 @@ class Node:
             raise StaleLeader()
         return msg
 
-    def close(self):
-        request = node_grpc_pb2.OneString(Msg='blah') # Message will be ignored
-        resp = self.stub.Close(request, timeout=self.timeout)
+    def close(self, *args, **kwargs):
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            resp = machines[self.machine_idx].close(self.idx, *args, **kwargs)
         status, msg = decode_response(resp)
         if status == 'ERR':
             raise ReturnedError(msg)
         return msg
-
+        
     def force_kill(self, print_fn):
         print_fn(f"Called force kill and respawn an node id {self.node_id}", 'yellow')
-        self.log_file.close()
-        self.process.kill()
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            return machines[self.machine_idx].force_kill(self.idx)
 
     def force_init(self, print_fn = print):
-        self.__init__(self.grpc_port, self.log_path, self.timeout, reinit=True)
-        while True:
-            # Wait for process to start
-            try:
-                print_fn(f"{self.init(self.raft_dir, self.raft_port, self.store_dir, self.node_id, False)} at node_id {self.node_id}", 'green')
-                break
-            except Exception as e:
-                pass
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            machines[self.machine_idx].force_init(self.idx)
         print_fn(f"Succesfully killed and respawned node {self.node_id}", 'green')
 
     def __del__(self):
-        try:
-            self.close()
-            self.process.terminate()
-        except:
-            pass
-        self.log_file.close()
+        with locks[self.machine_idx]:
+            machines[self.machine_idx]._pyroClaimOwnership()
+            machines[self.machine_idx].clear_node(self.idx)

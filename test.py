@@ -76,4 +76,4 @@ def benchmark(processes: int, address: str, iters: int):
             
 if __name__ == "__main__":
     # sanity_check('localhost:7000', 1000)
-    benchmark(5, 'localhost:7000', 1000)
+    benchmark(3, 'localhost:7000', 1000)

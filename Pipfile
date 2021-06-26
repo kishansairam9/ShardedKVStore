@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 grpcio-tools = "*"
 termcolor = "*"
+pyro5 = "*"
 
 [dev-packages]
 

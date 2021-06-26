@@ -1,6 +1,12 @@
 # Sharded Key / Value Store
 
-Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/kishan_sairam_students_iiit_ac_in/EYLDYB0E8UlNvmKRPVjKjO4BDXan5A2L_ENU8czE9Bs7VA) (Enable 720p, lower resolutions look blurry with text)
+Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/kishan_sairam_students_iiit_ac_in/EYLDYB0E8UlNvmKRPVjKjO4BDXan5A2L_ENU8czE9Bs7VA) 
+* Enable 720p, lower resolutions look blurry with text
+* Demo Video is on non distributed version - [this](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed) branch
+
+CHANGELOG:
+26 Jun 2021 - Added Distributed Support
+30 Apr 2021 - Initial version with demo video
 
 ## Problem Statement
 
@@ -114,12 +120,35 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
 - Install pipenv on your system, and use it to install dependencies from provided Pipfile and then run pipenv shell from repo root to activate virtual env
     - If pipenv complains about specific version 3.9, ignore it and force python version using `-python` flag, any version >=3.7 should work hopefully
 
-### KVStore Server
+### How to Run
 
-- Run `python3 kvstore_grpc_server.py <LOG_DIR_LOCATION>` to run GRPC Server for KVStore using default parameters
+- Two stages 
+    1. Running handler - `distributed_machine.py` 
+        - Run `python3 distributed_machine.py` to run handler with default port at 7940
+    2. Running store service - `kvstore_grpc_server.py` 
+        - Run `python3 kvstore_grpc_server.py <LOG_DIR_LOCATION>` to run GRPC Server for KVStore using default parameters
+- All logs are written to `<DIR OF distributed_machine.py RUN>/<LOG_DIR_LOCAATION passed to store>`
+- Pass list of `<IP:PORT>`s of machines on which handler is run to service script using `--machines` flag
+    - If localhost, pass `0.0.0.0` instead
+
+### Handler
 
 ```
-usage: kvstore_grpc_server.py [-h] [--port PORT] [--shard_cnt SHARD_CNT] [--replica_cnt REPLICA_CNT] [--max_workers MAX_WORKERS] [--print_req] storage_loc
+usage: distributed_machine.py [-h] [--port PORT]
+
+KVStore Server Parameters
+
+optional arguments:
+  -h, --help   show this help message and exit
+  --port PORT  Port of rmi server
+```
+
+### KVStore Server
+
+```
+usage: kvstore_grpc_server.py [-h] [--port PORT] [--shard_cnt SHARD_CNT] [--replica_cnt REPLICA_CNT] [--max_workers MAX_WORKERS] [--print_req]
+                              [--machines MACHINES [MACHINES ...]]
+                              storage_loc
 
 KVStore Server Parameters
 
@@ -136,6 +165,8 @@ optional arguments:
   --max_workers MAX_WORKERS
                         Max workers for grpc threadpool
   --print_req           Print requests as they arive to GRPC Server
+  --machines MACHINES [MACHINES ...]
+                        Machines in format <IP>(0.0.0.0 for localhost):<PORT> running distributed_machine.py
 ```
 
 ### Client
@@ -158,7 +189,7 @@ optional arguments:
 'v1'
 ```
 
-## Tests / Analysis
+## Tests / Analysis on non-distributed [version](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed)
 
 - Sanity Check
     - Using python dict as reference for correctness, performed all operations with checks for correctness
@@ -194,7 +225,8 @@ optional arguments:
 - 1 worker - 1min 30s
 - 3 workers - 3min 42s
 - 5 workers - 5min 19s
-- Explanation of observations from Concurrent benchmark
+
+Explanation of observations from Concurrent benchmark
     - Note: As can be observed above for 1 worker i.e., no concurrent load we have lower number of shards and lower number of replicas every time to take lesser time. We don't consider 1 worker in the following explanation, as trivially lower both always favours when we have only 1 client. But having only 1 client is unlikely.
     - Same number of shards, different number of replicas
         - Consensus algorithm phase dominates more
@@ -202,6 +234,14 @@ optional arguments:
     - Different number of shards, same number of replicas
         - Higher number of shards takes lesser time
         - This is because due to sharing of requests among different shards, when we have concurrent operations happening, we get performance advantage
+
+## Caveats
+
+- Recovery from RAFT logs is tricky, it requires the port mapping to be same as before the crash or shutdown
+- On single node it can be achieved by requiring that the old ports are free
+- In distributed case it is harder, we need to map the port and node ip as before or else it will fail
+- For this reason recovery functionaity is removed in distributed version of implementation
+- Single Node version which supports recovery when given same raft ports as before is available on `no-distributed` branch [here](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed)
 
 ## References
 

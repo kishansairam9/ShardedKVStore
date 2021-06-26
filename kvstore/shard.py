@@ -1,5 +1,6 @@
 from .utils import *
 from .node import Node
+from .machines import machines, machines_meta
 
 from time import sleep
 from termcolor import cprint
@@ -9,28 +10,6 @@ from typing import List
 import socket
 import grpc
 
-def is_port_not_free(port):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('localhost', port)) == 0
-
-def makesure_ports_valid(ports: List[int]):
-    curr_max = max(ports)
-    not_valid = list(map(is_port_not_free, ports))
-    for i in range(len(ports)):
-        if not_valid[i]:
-            curr = curr_max + 1
-            while is_port_not_free(curr):
-                curr +=1
-            ports[i] = curr
-            curr_max = curr
-
-test_some = { # Used for purpose of manual testing
-    'replica_count': 5,
-    'log_dir_path': 'test/log',
-    'raft_dir_path': 'test/raft',
-    'store_dir_path': 'test/store',
-    'print_name': 'TEST SHARD'
-}
 
 class Shard:
     '''Implements Shard as a replica set of nodes'''
@@ -41,52 +20,33 @@ class Shard:
         cprint(pre, 'blue', end='')
         cprint(content, *args)
     
-    def __init__(self, replica_count: int, log_dir_path: str, raft_dir_path: str, store_dir_path: str, base_raft_port: int = 34568, base_grpc_port: int = None, wait_time: int = 5, print_name: str = None):
-        # Make sure they are valid paths
-        os.system(f"mkdir -p {log_dir_path} {store_dir_path} {raft_dir_path}")
+    def __init__(self, replica_count: int, log_dir_path: str, raft_dir_path: str, store_dir_path: str, wait_time: int = 5, print_name: str = None):
         self.print_name = print_name
         nodes: dict = {}
-        # NOTE: For recovery to be possible previous set of raft ports must be same as current set of ports
-        # TODO: Add a note that if base raft ports are random recovery from previous raft logs is not possible
-        if base_grpc_port is None:
-            base_grpc_port = random.randint(20000, 30000-1) # Choose random base port from registered ports
-        if base_raft_port is None:
-            base_raft_port = random.randint(30000, 40000) # Choose random base port from registered ports
-        grpc_ports = [base_grpc_port + i for i in range(replica_count)]
-        raft_ports = [base_raft_port + i for i in range(replica_count)]
-        makesure_ports_valid(grpc_ports)
-        for i in raft_ports:
-            if is_port_not_free(i):
-                raise ValueError(f"Raft port {i} not free, can't proceed forward make sure raft ports are free if passed base_raft_port as None, or else try invoking again with different base raft port")
+        # NOTE: Recovery from previous logs is not possible in distributed version, check CAVEATS section of README
         self.log_dir_path = log_dir_path
         self.wait_time = wait_time
-        found_last_log = False
-        try:
-            # If last leader in log
-            with open(f"{log_dir_path}/last_leader.log", 'r') as f:
-                self.leader_id = int(f.readline().strip())
-                if self.leader_id not in range(replica_count):
-                    raise ValueError("Leader id from log greater not in range of ids for given replica count")
-                found_last_log = True
-        except:
-            # Choose random leader initially
-            self.leader_id = 0
+        # Choose any initial leader
+        self.leader_id = 0
         for i in range(replica_count):
+            midx = random.randint(0, len(machines)-1)
             try:
                 suffix = f"/node_{i}"
-                nodes[i] = Node(grpc_port=grpc_ports[i], log_path=log_dir_path+suffix)
+                nodes[i] = Node(machine_idx=midx,log_path=log_dir_path+suffix)
                 while True:
                     # Wait for process to start
                     try:
-                        self.print(f"{nodes[i].init(raft_dir=raft_dir_path+suffix, raft_port=raft_ports[i], store_dir=store_dir_path+suffix, node_id=i, leader=(i == self.leader_id))} at node_id {i}", 'green')
+                        self.print(f"{nodes[i].init(raft_dir=raft_dir_path+suffix,  store_dir=store_dir_path+suffix, node_id=i, leader=(i == self.leader_id))} at node_id {i}", 'green')
                         break
-                    except:
+                    except Exception as e:
+                        # print(e)
                         pass
             except ReturnedError as e:
                 # Delete all connections
                 del nodes
-                raise ReturnedError(f"Failed to setup node id {i} at grpc {grpc_ports[i]}, raftport {raft_ports[i]}, using suffix as {suffix} :\n{e}")
+                raise ReturnedError(f"Failed to setup node id {i} on machine {machines_meta[i]}")
         self.nodes = nodes
+        self.print(f"Waiting for {wait_time}s to let initial raft set up take place", 'yellow')
         sleep(wait_time) # Need to wait for inital raft setup to place
         self.update_leader(True)
         self.print(f"Joining nodes to leader node {self.leader_id}", 'yellow')

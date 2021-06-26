@@ -14,6 +14,7 @@ class RequestWrapper:
             if resp.Exists:
                 return resp.Data
             return None
+        print(resp)
         raise Exception(resp.Data)
 
     def put(self, key: str, val: str):
@@ -21,6 +22,7 @@ class RequestWrapper:
         resp = self.stub.Put(request)
         if resp.Success:
             return
+        print(resp)
         raise Exception(resp.Data)
 
     def delete(self, key: str):
@@ -28,4 +30,5 @@ class RequestWrapper:
         resp = self.stub.Delete(request)
         if resp.Success:
             return
+        print(resp)
         raise Exception(resp.Data)
