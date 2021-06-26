@@ -6,13 +6,7 @@ import grpc
 from python_grpc import node_grpc_pb2_grpc
 from python_grpc import node_grpc_pb2
 
-
 GO_BUILT_SERVER = f"{os.getenv('HOME')}/.local/bin/node_grpc_server"
-
-# TODO: CLEAN OLD CODE BUILDING BINARY EVERYTIME
-# ABS_REPO_ROOT = os.path.dirname(os.path.realpath(__file__)) + '/..'
-# GO_SERVER_CODE = f'{ABS_REPO_ROOT}/node_grpc_server.go'
-# os.system(f"cd {'/'+'/'.join(GO_SERVER_CODE.split('/')[:-1])} && go build {GO_SERVER_CODE}")
 
 class InternalNode:
     '''Implements node interface with GRPC'''

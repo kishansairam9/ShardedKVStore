@@ -127,6 +127,7 @@ CHANGELOG:
 
 - Install go lang from official site, setup env variables as required for using modules
 - Run `go mod tidy` inside main directory to fetch all required packages
+- Build binary using `go build node_grpc_server.go` and move binary to `$HOME/.local/bin/`
 - Install pipenv on your system, and use it to install dependencies from provided Pipfile and then run pipenv shell from repo root to activate virtual env
     - If pipenv complains about specific version 3.9, ignore it and force python version using `-python` flag, any version >=3.7 should work hopefully
 
