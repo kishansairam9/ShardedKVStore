@@ -4,10 +4,7 @@ from .machines import machines, machines_meta
 
 from time import sleep
 from termcolor import cprint
-import os
 import random
-from typing import List
-import socket
 import grpc
 
 
@@ -20,7 +17,7 @@ class Shard:
         cprint(pre, 'blue', end='')
         cprint(content, *args)
     
-    def __init__(self, replica_count: int, log_dir_path: str, raft_dir_path: str, store_dir_path: str, wait_time: int = 5, print_name: str = None):
+    def __init__(self, replica_count: int, log_dir_path: str, raft_dir_path: str, store_dir_path: str, wait_time: int = 10, print_name: str = None):
         self.print_name = print_name
         nodes: dict = {}
         # NOTE: Recovery from previous logs is not possible in distributed version, check CAVEATS section of README
@@ -74,8 +71,6 @@ class Shard:
             try:
                 if self.nodes[id].is_leader():
                     self.leader_id = id
-                    with open(f"{self.log_dir_path}/last_leader.log", 'w') as f:
-                        print(self.leader_id, file=f)
                     return
             except ReturnedError as e:
                 raise ReturnedError(f"Failed to check if node {id} at raft port {self.nodes[id].raft_port} is leader:\n{e}")

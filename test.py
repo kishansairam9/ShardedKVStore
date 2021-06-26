@@ -1,4 +1,4 @@
-import random, string, multiprocessing
+import random, string, multiprocessing, argparse
 from client import RequestWrapper
 
 def getrandkv(key_len: int, val_len: int):
@@ -75,5 +75,17 @@ def benchmark(processes: int, address: str, iters: int):
 
             
 if __name__ == "__main__":
-    # sanity_check('localhost:7000', 1000)
-    benchmark(3, 'localhost:7000', 1000)
+    parser = argparse.ArgumentParser(description='KVStore Server Parameters')
+    parser.add_argument('--host', type=str, default='0.0.0.0', help='Host')
+    parser.add_argument('--port', type=int, default=7000, help='Port of grpc server')
+    parser.add_argument('--sanity', action='store_true', help="Perform sanity check")
+    parser.add_argument('--bench_workers', type=int, default=5, help='Workers performing concurrent benchmark')
+    parser.add_argument('--iters', type=int, default=1000, help='iters')
+    args = parser.parse_args()
+
+    addr = f"{args.host}:{args.port}"
+
+    if args.sanity:
+        sanity_check(addr, 1000)
+    else:
+        benchmark(5, addr, 1000)

@@ -141,6 +141,7 @@ CHANGELOG:
 - All logs are written to `<DIR OF distributed_machine.py RUN>/<LOG_DIR_LOCAATION passed to store>`
 - Pass list of `<IP:PORT>`s of machines on which handler is run to service script using `--machines` flag
     - If localhost, pass `0.0.0.0` instead
+- Testing / Benchmarking can be done using `test.py` and passing params as required
 
 ### Handler
 
@@ -178,6 +179,23 @@ optional arguments:
   --print_req           Print requests as they arive to GRPC Server
   --machines MACHINES [MACHINES ...]
                         Machines in format <IP>(0.0.0.0 for localhost):<PORT> running distributed_machine.py
+```
+
+### Testing
+
+```
+usage: test.py [-h] [--host HOST] [--port PORT] [--sanity] [--bench_workers BENCH_WORKERS] [--iters ITERS]
+
+KVStore Server Parameters
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --host HOST           Host
+  --port PORT           Port of grpc server
+  --sanity              Perform sanity check
+  --bench_workers BENCH_WORKERS
+                        Workers performing concurrent benchmark
+  --iters ITERS         iters
 ```
 
 ### Client

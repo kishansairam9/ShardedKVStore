@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=args.max_workers))
     kvstore_pb2_grpc.add_KVStoreServicer_to_server(KVStoreServicer(args.shard_cnt, args.replica_cnt, args.storage_loc, args.machines, args.print_req), server)
-    server_addr = f'localhost:{args.port}'
+    server_addr = f'0.0.0.0:{args.port}'
     server.add_insecure_port(server_addr)
     server.start()
     print(f"GRPC Server started at {server_addr}")

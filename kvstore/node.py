@@ -24,7 +24,7 @@ class Node:
             ret_dict = machines[self.machine_idx].init(self.idx, *args, **kwargs)
         self.raft_dir = f"{ret_dict['ip']}:" + str(ret_dict['raft_dir'])
         self.store_dir = f"{ret_dict['ip']}:" + str(ret_dict['store_dir'])
-        self.raft_port = f"{ret_dict['ip']}:" + str(ret_dict['raft_port'])
+        self.raft_port = str(ret_dict['raft_port'])
         self.node_id = ret_dict['node_id']
         self.timeout = ret_dict['timeout']
         self.grpc_port = f"{ret_dict['ip']}:" + str(ret_dict['grpc_port'])

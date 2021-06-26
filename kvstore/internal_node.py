@@ -25,7 +25,7 @@ class InternalNode:
         self.raft_port = raft_port
         self.store_dir = store_dir
         self.node_id = node_id
-        request = node_grpc_pb2.InitConfig(RaftDir=raft_dir, RaftAddr=f'localhost:{raft_port}', StoreDir=store_dir, NodeID=str(node_id), Leader=leader, ClearStoreDir=clear_store_dir)
+        request = node_grpc_pb2.InitConfig(RaftDir=raft_dir, RaftAddr=f'{raft_port}', StoreDir=store_dir, NodeID=str(node_id), Leader=leader, ClearStoreDir=clear_store_dir)
         resp = self.stub.Init(request, timeout=self.timeout)
         return {'raft_dir': str(self.raft_dir), 'raft_port': str(self.raft_port), 'store_dir': self.store_dir, 'node_id': self.node_id, 'timeout': self.timeout, 'grpc_port': self.grpc_port, 'log_path': self.log_path, 'resp': resp.Msg}
 

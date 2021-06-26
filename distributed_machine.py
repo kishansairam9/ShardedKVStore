@@ -62,7 +62,7 @@ class DistributedMachine:
             if kwargs['store_dir'][0] != '/':
                 kwargs['store_dir'] = f"{os.getenv('PWD')}/" + kwargs['store_dir']
             os.system(f"mkdir -p {kwargs['store_dir']}")
-        ret_dict = self.nodes[idx].init(*args, raft_port=self.get_port(), **kwargs)
+        ret_dict = self.nodes[idx].init(*args, raft_port=f"{self.ip}:{self.get_port()}", **kwargs)
         ret_dict['ip'] = self.ip
         return ret_dict
 
