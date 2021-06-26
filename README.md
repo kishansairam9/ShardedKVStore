@@ -4,9 +4,9 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
 * Enable 720p, lower resolutions look blurry with text
 * Demo Video is on non distributed version - [this](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed) branch
 
-CHANGELOG:
-26 Jun 2021 - Added Distributed Support
-30 Apr 2021 - Initial version with demo video
+## CHANGELOG
+- 26 Jun 2021 - Added Distributed Support
+- 30 Apr 2021 - Initial version with demo video
 
 ## Problem Statement
 
