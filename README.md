@@ -158,7 +158,11 @@ optional arguments:
 'v1'
 ```
 
+
 ## Tests / Analysis
+
+> **TESTS WERE OBSERVED TO BE MUCH FASTER ON LINUX and machine with moderate number of cores unlike 2 on MacBook Air**
+> **TODO** UPDATE TEST RESULTS ON LINUX
 
 - Sanity Check
     - Using python dict as reference for correctness, performed all operations with checks for correctness
@@ -194,7 +198,8 @@ optional arguments:
 - 1 worker - 1min 30s
 - 3 workers - 3min 42s
 - 5 workers - 5min 19s
-- Explanation of observations from Concurrent benchmark
+
+Explanation of observations from Concurrent benchmark
     - Note: As can be observed above for 1 worker i.e., no concurrent load we have lower number of shards and lower number of replicas every time to take lesser time. We don't consider 1 worker in the following explanation, as trivially lower both always favours when we have only 1 client. But having only 1 client is unlikely.
     - Same number of shards, different number of replicas
         - Consensus algorithm phase dominates more
