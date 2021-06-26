@@ -70,6 +70,10 @@ CHANGELOG:
 
 ![images/arch.jpeg](images/arch.jpeg)
 
+- Distributed architecture is a direct extension of this with a remote handler for node class. (Not shown in image)
+- Instead of one node per hanlder we allow it to have multiple nodes. This removes the need for running a new script everytime we want to add a node
+- Handler is run on each machine and the set of nodes it corresponds to and operations on them are accessed using RMI. Each handler can have any node of any shard
+
 ### Files and Directory Structure
 
 ```
@@ -78,10 +82,16 @@ CHANGELOG:
 ├── Pipfile.lock <Python Env>
 ├── README.md
 ├── client.py <Wrapper Client> ||* GRPC Client Wrapper File *||
+├── distributed_machine.py <Handler>
 ├── go.mod <Go Env>
 ├── go.sum <Go Env>
+├── images <Images>
+│   ├── arch.jpeg
+│   └── redis_img.png
 ├── kvstore <Python implementation of Store>
-│   ├── node.py <Node of replica set implemented using GRPC to Golang Node>
+│   ├── internal_node.py <Used by Handler - Node of replica set implemented using GRPC to Golang Node>
+│   ├── machines.py <Storage of machine variables and metadata>
+│   ├── node.py <Used by Service - Node as RMI call to machine>
 │   ├── shard.py <Shard as a replica set of nodes>
 │   ├── store.py <Store as a collection of shards>
 │   └── utils.py <Custom Exceptions>
