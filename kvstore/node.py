@@ -31,7 +31,8 @@ class Node:
         self.timeout = timeout
         self.grpc_port = grpc_port
         self.log_path = log_path
-        self.log_file = open(log_path,  'w+' if reinit else 'w')
+        os.system(f'mkdir -p {log_path}')
+        self.log_file = open(log_path+'/log.txt',  'w+' if reinit else 'w')
         self.process = subprocess.Popen(f"{GO_BUILT_SERVER} {grpc_port}", shell=True, stdout=self.log_file, stderr=self.log_file)
         self.channel = grpc.insecure_channel(f'localhost:{grpc_port}')
         self.stub = node_grpc_pb2_grpc.NodeStub(self.channel)

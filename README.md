@@ -111,8 +111,10 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
 
 - Install go lang from official site, setup env variables as required for using modules
 - Run `go mod tidy` inside main directory to fetch all required packages
-- Install pipenv on your system, and use it to install dependencies from provided Pipfile and then run pipenv shell from repo root to activate virtual env
-    - If pipenv complains about specific version 3.9, ignore it and force python version using `-python` flag, any version >=3.7 should work hopefully
+- Install pipenv (pip3 install pipenv) on your system, and use it to install dependencies from provided Pipfile 
+    - Run `pipenv sync --python $(which python3)` from root of repo
+    - If pipenv complains about specific version 3.9, ignore it. We force python version using `-python` flag, any version >=3.7 should work hopefully
+- Run pipenv shell from repo root to activate virtual env
 
 ### KVStore Server
 
@@ -161,9 +163,6 @@ optional arguments:
 
 ## Tests / Analysis
 
-> **TESTS WERE OBSERVED TO BE MUCH FASTER ON LINUX and machine with moderate number of cores unlike 2 on MacBook Air**
-> **TODO** UPDATE TEST RESULTS ON LINUX
-
 - Sanity Check
     - Using python dict as reference for correctness, performed all operations with checks for correctness
     - Initially filled database with 1000 entries, later performed another 1000 ops with each probability as
@@ -171,42 +170,61 @@ optional arguments:
         - 0.35 - delete
         - 0.4 - get of keys existing in database
         - 0.1 - get of non existing keys in database
-- Concurrent Benchmark - 1000 operations, get put delete with equal probability
-    - We experimented with 10 GRPC Server workers and 20, we obtained similar performance with both, hence we stuck to using 10 workers
-    - All the tests were run on 2018 Macbook Air with 8GB RAM, 1.6Ghz Dual core intel i5
+- Concurrent Benchmark - 10000 operations, get put delete with equal probability
 
+
+Testing setup
+- We used 10 GRPC kvstore service GRPC workers
+- All the tests were run on server linux CentOS Server with Xeon Processor. 
+- System has 64GB+ RAM (isn't a factor as storage is disk based not in-memory, memory usage was quite low)
+- Location on HDD is used for storage
+
+- Note on terminology - here worker means a concurrent user of service. Each worker does 10000 operations
+- More number of workers means more no of concurrent operations
+
+### Setting 1
 5 Shards, each with 5 Replicas
 
-- 1 worker - 1min 56s
-- 3 workers - 4min 29s
-- 5 workers - 7min 23s
+- 1 worker - 26.461s
+- 3 workers - 33.027s
+- 5 workers - 47.882s
 
 5 Shards, each with 3 Replicas
 
-- 1 worker - 1min 28s
-- 3 workers - 3min 21s
-- 5 workers - 4min 46s
+- 1 worker - 23.256s
+- 3 workers - 29.848s
+- 5 workers - 46.353s
 
 1 Shard, with 5 replicas
 
-- 1 worker - 1min 51s
-- 3 workers - 5min 7s
-- 5 workers - 7min 42s
+- 1 worker - 26.568s
+- 3 workers - 29.877s
+- 5 workers - 46.419s
 
 3 Shards, each with 3 Replicas
 
-- 1 worker - 1min 30s
-- 3 workers - 3min 42s
-- 5 workers - 5min 19s
+- 1 worker - 26.568s
+- 3 workers - 29.750s
+- 5 workers - 46.276s
 
-Explanation of observations from Concurrent benchmark
-    - Note: As can be observed above for 1 worker i.e., no concurrent load we have lower number of shards and lower number of replicas every time to take lesser time. We don't consider 1 worker in the following explanation, as trivially lower both always favours when we have only 1 client. But having only 1 client is unlikely.
-    - Same number of shards, different number of replicas
-        - Consensus algorithm phase dominates more
-        - Lower the number of replicas, lower the time
-    - Different number of shards, same number of replicas
-        - Higher number of shards takes lesser time
-        - This is because due to sharing of requests among different shards, when we have concurrent operations happening, we get performance advantage
+For above experiments results are very close and we cannot make any useful observations. Testing system at higher scale would give us meaningful insights
+
+### Setting 2
+
+For next test, we increased the number of GPRC workers of service to 20 and also benchmarking workers at 20. 
+
+3 Shards with 5 Replicas - 2m54.674s
+5 Shards with 5 Replicas - 2m41.556s
+
+As we can see sharding increased throughput and decreased time taken
+
+We can make these following observations in general
+- Same number of shards, different number of replicas
+    - Consensus algorithm phase dominates more
+    - Lower the number of replicas, lower the time
+- Different number of shards, same number of replicas
+    - Higher number of shards takes lesser time
+    - This is because due to sharing of requests among different shards, when we have concurrent operations happening, we get performance advantage
 
 ## References
 
