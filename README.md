@@ -213,8 +213,8 @@ For above experiments results are very close and we cannot make any useful obser
 
 For next test, we increased the number of GPRC workers of service to 20 and also benchmarking workers at 20. 
 
-3 Shards with 5 Replicas - 2m54.674s
-5 Shards with 5 Replicas - 2m41.556s
+- 3 Shards with 5 Replicas - 2m54.674s
+- 5 Shards with 5 Replicas - 2m41.556s
 
 As we can see sharding increased throughput and decreased time taken
 
