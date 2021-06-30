@@ -249,19 +249,19 @@ optional arguments:
 
 ## Tests / Analysis on distributed version
 
-- Tests / Analysis on non-distributed [version](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed) are found it it's README
+- Tests / Analysis on non-distributed [version](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed) are found in it's README [here](https://github.com/kishansairam9/ShardedKVStore/blob/no-distributed/README.md#tests--analysis)
 - Direct comparision between these two branches might not be relevant as distributed version has extra network calls for handling each go backend
 - As a more accuracte representation we compare between various number of distributed handlers running on different number of machines in this section
 - Another tiny difference in tests of both branches is we updated probabilites as 0.5 0.25 0.25 for get put delete respectively, instead of equal probabilites as in general reads are more frequent
 
-- Sanity Check
+- **Sanity Check**
     - Using python dict as reference for correctness, performed all operations with checks for correctness
-    - Initially filled database with 10000 entries, later performed another 1000 ops with each probability as
+    - Initially filled database with 10000 entries, later performed another 10000 ops with each probability as
         - 0.15 - put
         - 0.35 - delete
         - 0.4 - get of keys existing in database
         - 0.1 - get of non existing keys in database
-- Concurrent Benchmark - 10000 operations, get put delete with probabilities of 0.5, 0.25, 0.25
+- **Concurrent Benchmark** - 10000 operations, get put delete with probabilities of 0.5, 0.25, 0.25
 
 
 Testing setup

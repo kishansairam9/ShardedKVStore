@@ -1,11 +1,12 @@
 import random, string, multiprocessing, argparse
 from client import RequestWrapper
+from time import sleep
 
 def getrandkv(key_len: int, val_len: int):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=key_len)), \
         ''.join(random.choices(string.ascii_uppercase + string.digits, k=val_len))
 
-def sanity_check(address, iters: int, inital_populate: int = 1000):
+def sanity_check(address, iters: int, inital_populate: int = 10000):
     """Performs sanity checking of kv store to ensure correctness by using a reference python dictonary"""
     print("Performing SANITY CHECK! Ensure KVStore is empty initally to get correct results, else restart")
     pykv = {}
@@ -19,7 +20,7 @@ def sanity_check(address, iters: int, inital_populate: int = 1000):
     
     for _ in range(iters):
         r = random.random()
-        if r <= 0.15:
+        if len(list(pykv.keys()))== 0 or r <= 0.15:
             # Put
             key_len = random.randint(30, 50)
             val_len = random.randint(60, 100)
@@ -36,7 +37,14 @@ def sanity_check(address, iters: int, inital_populate: int = 1000):
             q = random.random()
             if q <= 0.8:
                 k = random.choice(list(pykv.keys()))
-                assert pykv[k] == req.get(k), f"Get got incorrect result, expected to return <{pykv[k]}> for <{k}> got <{req.get(k)}> instead"
+                got = req.get(k) 
+                if got != pykv[k]:
+                    print(f"Get got incorrect result, expected to return <{pykv[k]}> for <{k}> got <{got}> instead")
+                    print("Due to BASE consistency, get might have been stale, sleeping 1s and try again")
+                    sleep(1)
+                    got = req.get(k)
+                    assert pykv[k] == got, f"Get got incorrect AFTER ACCOUNTING FOR BASE, expected to return <{pykv[k]}> for <{k}> got <{got}> instead"
+                    print("BASE satisfied")
             else:
                 k, _ = getrandkv(key_len = random.randint(30, 50), val_len=1)
                 if k in pykv:
