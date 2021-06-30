@@ -60,7 +60,7 @@ class DistributedMachine:
         if 'store_dir' in kwargs:
             kwargs['store_dir'] = f"{STORAGE_ROOT}/" + kwargs['store_dir']
             os.system(f"mkdir -p {kwargs['store_dir']}")
-        ret_dict = self.nodes[idx].init(*args, raft_port=f"{self.ip}:{self.get_port()}", **kwargs)
+        ret_dict = self.nodes[idx].init(*args, raft_port=f"{'localhost' if self.ip in ['0.0.0.0', '127.0.0.1'] else self.ip}:{self.get_port()}", **kwargs)
         ret_dict['ip'] = self.ip
         return ret_dict
 
