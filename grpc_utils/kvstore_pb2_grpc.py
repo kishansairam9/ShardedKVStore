@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from . import kvstore_pb2 as kvstore__pb2
+from grpc_utils import kvstore_pb2 as grpc__utils_dot_kvstore__pb2
 
 
 class KVStoreStub(object):
@@ -16,18 +16,18 @@ class KVStoreStub(object):
         """
         self.Get = channel.unary_unary(
                 '/KVStore/Get',
-                request_serializer=kvstore__pb2.String.SerializeToString,
-                response_deserializer=kvstore__pb2.ValueReturn.FromString,
+                request_serializer=grpc__utils_dot_kvstore__pb2.String.SerializeToString,
+                response_deserializer=grpc__utils_dot_kvstore__pb2.ValueReturn.FromString,
                 )
         self.Delete = channel.unary_unary(
                 '/KVStore/Delete',
-                request_serializer=kvstore__pb2.String.SerializeToString,
-                response_deserializer=kvstore__pb2.Status.FromString,
+                request_serializer=grpc__utils_dot_kvstore__pb2.String.SerializeToString,
+                response_deserializer=grpc__utils_dot_kvstore__pb2.Status.FromString,
                 )
         self.Put = channel.unary_unary(
                 '/KVStore/Put',
-                request_serializer=kvstore__pb2.KeyValuePair.SerializeToString,
-                response_deserializer=kvstore__pb2.Status.FromString,
+                request_serializer=grpc__utils_dot_kvstore__pb2.KeyValuePair.SerializeToString,
+                response_deserializer=grpc__utils_dot_kvstore__pb2.Status.FromString,
                 )
 
 
@@ -57,18 +57,18 @@ def add_KVStoreServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Get': grpc.unary_unary_rpc_method_handler(
                     servicer.Get,
-                    request_deserializer=kvstore__pb2.String.FromString,
-                    response_serializer=kvstore__pb2.ValueReturn.SerializeToString,
+                    request_deserializer=grpc__utils_dot_kvstore__pb2.String.FromString,
+                    response_serializer=grpc__utils_dot_kvstore__pb2.ValueReturn.SerializeToString,
             ),
             'Delete': grpc.unary_unary_rpc_method_handler(
                     servicer.Delete,
-                    request_deserializer=kvstore__pb2.String.FromString,
-                    response_serializer=kvstore__pb2.Status.SerializeToString,
+                    request_deserializer=grpc__utils_dot_kvstore__pb2.String.FromString,
+                    response_serializer=grpc__utils_dot_kvstore__pb2.Status.SerializeToString,
             ),
             'Put': grpc.unary_unary_rpc_method_handler(
                     servicer.Put,
-                    request_deserializer=kvstore__pb2.KeyValuePair.FromString,
-                    response_serializer=kvstore__pb2.Status.SerializeToString,
+                    request_deserializer=grpc__utils_dot_kvstore__pb2.KeyValuePair.FromString,
+                    response_serializer=grpc__utils_dot_kvstore__pb2.Status.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -92,8 +92,8 @@ class KVStore(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/KVStore/Get',
-            kvstore__pb2.String.SerializeToString,
-            kvstore__pb2.ValueReturn.FromString,
+            grpc__utils_dot_kvstore__pb2.String.SerializeToString,
+            grpc__utils_dot_kvstore__pb2.ValueReturn.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -109,8 +109,8 @@ class KVStore(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/KVStore/Delete',
-            kvstore__pb2.String.SerializeToString,
-            kvstore__pb2.Status.FromString,
+            grpc__utils_dot_kvstore__pb2.String.SerializeToString,
+            grpc__utils_dot_kvstore__pb2.Status.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -126,7 +126,7 @@ class KVStore(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/KVStore/Put',
-            kvstore__pb2.KeyValuePair.SerializeToString,
-            kvstore__pb2.Status.FromString,
+            grpc__utils_dot_kvstore__pb2.KeyValuePair.SerializeToString,
+            grpc__utils_dot_kvstore__pb2.Status.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

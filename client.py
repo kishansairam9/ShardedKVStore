@@ -1,5 +1,5 @@
 import grpc
-from python_grpc import kvstore_pb2, kvstore_pb2_grpc
+from grpc_utils import kvstore_pb2, kvstore_pb2_grpc
 
 class RequestWrapper:
 

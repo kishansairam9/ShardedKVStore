@@ -3,8 +3,8 @@ import sys
 sys.path.append('..')
 import subprocess
 import grpc
-from python_grpc import node_grpc_pb2_grpc
-from python_grpc import node_grpc_pb2
+from grpc_utils import node_grpc_pb2_grpc
+from grpc_utils import node_grpc_pb2
 
 GO_BUILT_SERVER = f"{os.getenv('HOME')}/.local/bin/node_grpc_server"
 

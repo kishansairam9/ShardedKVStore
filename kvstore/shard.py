@@ -1,6 +1,6 @@
 from .utils import *
 from .node import Node
-from .machines import machines, machines_meta
+from .machines import machines_meta
 
 from time import sleep
 from termcolor import cprint
@@ -24,9 +24,9 @@ class Shard:
         self.log_dir_path = log_dir_path
         self.wait_time = wait_time
         # Choose any initial leader
-        self.leader_id = 0
+        self.leader_id = random.randint(0, replica_count-1)
         for i in range(replica_count):
-            midx = random.randint(0, len(machines)-1)
+            midx = random.randint(0, len(machines_meta)-1)
             try:
                 suffix = f"/node_{i}"
                 nodes[i] = Node(machine_idx=midx,log_path=log_dir_path+suffix)

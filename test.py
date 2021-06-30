@@ -53,9 +53,9 @@ def worker(idx: int, address: str, iters: int):
         key_len = random.randint(30, 50)
         val_len = random.randint(60, 100)
         k, v = getrandkv(key_len, val_len)
-        if r < 0.33:
+        if r < 0.5:
             req.put(k, v)
-        elif r < 0.66:
+        elif r < 0.75:
             req.get(k)
         else:
             req.delete(k)
@@ -80,12 +80,12 @@ if __name__ == "__main__":
     parser.add_argument('--port', type=int, default=7000, help='Port of grpc server')
     parser.add_argument('--sanity', action='store_true', help="Perform sanity check")
     parser.add_argument('--bench_workers', type=int, default=5, help='Workers performing concurrent benchmark')
-    parser.add_argument('--iters', type=int, default=1000, help='iters')
+    parser.add_argument('--iters', type=int, default=10000, help='iters')
     args = parser.parse_args()
 
     addr = f"{args.host}:{args.port}"
 
     if args.sanity:
-        sanity_check(addr, 1000)
+        sanity_check(addr, args.iters)
     else:
-        benchmark(5, addr, 1000)
+        benchmark(args.bench_workers, addr, args.iters)

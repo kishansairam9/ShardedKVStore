@@ -11,6 +11,7 @@ Pyro5.config.COMMTIMEOUT = 3
 Pyro5.config.MAX_RETRIES = 1
 
 KEEP_ON = True
+STORAGE_ROOT = os.getenv('PWD')
 
 def status():
     return KEEP_ON
@@ -45,8 +46,7 @@ class DistributedMachine:
     @Pyro5.server.expose  
     def add_node(self, *args, **kwargs):
         if 'log_path' in kwargs:
-            if kwargs['log_path'][0] != '/':
-                kwargs['log_path'] = f"{os.getenv('PWD')}/" + kwargs['log_path']
+            kwargs['log_path'] = f"{STORAGE_ROOT}/" + kwargs['log_path']
             os.system(f"mkdir -p {kwargs['log_path']}")
         self.nodes.append(Node(*args, grpc_port=self.get_port(), **kwargs))
         return len(self.nodes) - 1
@@ -55,12 +55,10 @@ class DistributedMachine:
     def init(self, idx, *args, **kwargs):
         assert idx < len(self.nodes), "Invalid Node ID"
         if 'raft_dir' in kwargs:
-            if kwargs['raft_dir'][0] != '/':
-                kwargs['raft_dir'] = f"{os.getenv('PWD')}/" + kwargs['raft_dir']
+            kwargs['raft_dir'] = f"{STORAGE_ROOT}/" + kwargs['raft_dir']
             os.system(f"mkdir -p {kwargs['raft_dir']}")
         if 'store_dir' in kwargs:
-            if kwargs['store_dir'][0] != '/':
-                kwargs['store_dir'] = f"{os.getenv('PWD')}/" + kwargs['store_dir']
+            kwargs['store_dir'] = f"{STORAGE_ROOT}/" + kwargs['store_dir']
             os.system(f"mkdir -p {kwargs['store_dir']}")
         ret_dict = self.nodes[idx].init(*args, raft_port=f"{self.ip}:{self.get_port()}", **kwargs)
         ret_dict['ip'] = self.ip
@@ -121,7 +119,10 @@ class DistributedMachine:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='KVStore Server Parameters')
     parser.add_argument('--port', type=int, default=7940, help='Port of rmi server')
+    parser.add_argument('--storage', type=str, help='Root dir for storage of this machine\'s files, defaults to dir from which script is run', default=STORAGE_ROOT)
     args = parser.parse_args()
+
+    STORAGE_ROOT = args.storage
 
     def custom_error_handler(daemon, client_sock, method, vargs, kwargs, exception):
         print("\nERROR IN METHOD CALL USER CODE:")

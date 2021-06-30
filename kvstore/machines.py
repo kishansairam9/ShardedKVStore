@@ -5,13 +5,16 @@ import threading
 Pyro5.config.COMMTIMEOUT = 3
 Pyro5.config.MAX_RETRIES = 1
 
-machines = []
+# machines = []
 machines_meta = []
-locks = []
+# locks = []
 
 def add_machine(host, port):
-    global machines, machines_meta
-    machines.append(Pyro5.api.Proxy(f"PYRO:kvstore-machinermi@{host}:{port}"))
+    global machines_meta
     machines_meta.append((host, port))
-    machines[-1].store_meta(host, port)
-    locks.append(threading.Lock())
+
+def get_machine_lock(idx):
+    h, p = machines_meta[idx]
+    machine = Pyro5.api.Proxy(f"PYRO:kvstore-machinermi@{h}:{p}")
+    machine.store_meta(h,p)
+    return machine, threading.Lock()

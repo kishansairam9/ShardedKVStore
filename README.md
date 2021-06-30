@@ -1,8 +1,34 @@
-# Sharded Key / Value Store
+# Sharded Key / Value Store <!-- omit in toc -->
 
 Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/kishan_sairam_students_iiit_ac_in/EYLDYB0E8UlNvmKRPVjKjO4BDXan5A2L_ENU8czE9Bs7VA) 
 * Enable 720p, lower resolutions look blurry with text
+* Kindly note the results in video are poor due to being run on a dual core Macbook Air, results are updated in respective branch README using a Linux server
 * Demo Video is on non distributed version - [this](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed) branch
+
+## Table of Contents <!-- omit in toc -->
+
+- [CHANGELOG](#changelog)
+- [Problem Statement](#problem-statement)
+- [Architecture](#architecture)
+- [Replication](#replication)
+- [Design Choices](#design-choices)
+  - [RAFT Implementation](#raft-implementation)
+  - [Interfacing RAFT & Language choice](#interfacing-raft--language-choice)
+  - [Data Storage](#data-storage)
+- [Implementation](#implementation)
+  - [Architecture](#architecture-1)
+  - [Files and Directory Structure](#files-and-directory-structure)
+  - [Extending implementation to Distributed Setting](#extending-implementation-to-distributed-setting)
+- [Documentation](#documentation)
+  - [Setup](#setup)
+  - [How to Run](#how-to-run)
+  - [Handler](#handler)
+  - [KVStore Server](#kvstore-server)
+  - [Testing](#testing)
+  - [Client](#client)
+- [Tests / Analysis on distributed version](#tests--analysis-on-distributed-version)
+- [Caveats](#caveats)
+- [References](#references)
 
 ## CHANGELOG
 - 26 Jun 2021 - Added Distributed Support
@@ -21,7 +47,7 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
 - Each shard is a "replica set" and our final key / value store is a set of shards
 - The system we are supposed to build is similar in structure to that of Redis operating in cluster mode as shown below
 
-![images/redis_img.png](images/redis_img.png)
+![.images/redis_img.png](.images/redis_img.png)
 
 ## Replication
 
@@ -68,7 +94,7 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
 - Each "shard" is implemented as a set of nodes taking part in raft consensus
 - "KVStore" is implemented as a set of shards
 
-![images/arch.jpeg](images/arch.jpeg)
+![.images/arch.jpeg](.images/arch.jpeg)
 
 - Distributed architecture is a direct extension of this with a remote handler for node class. (Not shown in image)
 - Instead of one node per hanlder we allow it to have multiple nodes. This removes the need for running a new script everytime we want to add a node
@@ -78,14 +104,23 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
 
 ```
 .
+├── README.md
 ├── Pipfile <Python Env>
 ├── Pipfile.lock <Python Env>
-├── README.md
 ├── client.py <Wrapper Client> ||* GRPC Client Wrapper File *||
 ├── distributed_machine.py <Handler>
-├── go.mod <Go Env>
-├── go.sum <Go Env>
-├── images <Images>
+├── kvstore_grpc_server.py <KVStore GRPC Server> ||* File to run Server *||
+└── test.py <Sanity check and concurrent bechmark script>
+├── go_backend
+│   ├── go.mod
+│   ├── go.sum
+│   ├── node <Golang node implementation based on hashicorp raft>
+│   │   ├── fsm.go <FSM for raft>
+│   │   ├── node_grpc_grpc.pb.go <GRPC generated file>
+│   │   ├── node_grpc.pb.go <GRPC generated file>
+│   │   └── store.go <Node interface as a KVStore>
+│   └── node_grpc_server.go <Golang Node GRPC Server>
+├── .images <Images for README>
 │   ├── arch.jpeg
 │   └── redis_img.png
 ├── kvstore <Python implementation of Store>
@@ -95,22 +130,15 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
 │   ├── shard.py <Shard as a replica set of nodes>
 │   ├── store.py <Store as a collection of shards>
 │   └── utils.py <Custom Exceptions>
-├── kvstore.proto <Protobuf for KVStore service>
-├── kvstore_grpc_server.py <KVStore GRPC Server> ||* File to run Server *||
-├── node <Golang node implementation based on hashicorp raft>
-│   ├── fsm.go <FSM for raft>
-│   ├── node_grpc.pb.go <GRPC generated file>
-│   ├── node_grpc_grpc.pb.go <GRPC generated file>
-│   └── store.go <Node interface as a KVStore>
-├── node_grpc.proto <Protobuf for Node in Golang>
-├── node_grpc_server.go <Golang Node GRPC Server>
-├── protoc_command.sh <Script for updating protobuf generated files>
-├── python_grpc <GRPC Generated files>
-    ├── kvstore_pb2.py
-    ├── kvstore_pb2_grpc.py
-    ├── node_grpc_pb2.py
-    └── node_grpc_pb2_grpc.py
-└── test.py <Sanity check and concurrent bechmark script>
+├── grpc_utils
+│   ├── kvstore_pb2_grpc.py <GRPC Generated files>
+│   ├── kvstore_pb2.py <GRPC Generated files>
+│   ├── node_grpc_pb2_grpc.py <GRPC Generated files>
+│   ├── node_grpc_pb2.py <GRPC Generated files>
+│   ├── kvstore.proto <Protobuf for KVStore service>
+│   └── node_grpc.proto <Protobuf for Node in Golang>
+├── generate_grpc_files.sh <Script for updating protobuf generated files>
+├── install_go_backend.sh <Script for installing go backend to local bin>
 ```
 
 ### Extending implementation to Distributed Setting
@@ -126,16 +154,16 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
 ### Setup
 
 - Install go lang from official site, setup env variables as required for using modules
-- Run `go mod tidy` inside main directory to fetch all required packages
-- Build binary using `go build node_grpc_server.go` and move binary to `$HOME/.local/bin/`
+- Run `install_go_backend.sh` to build binary and symlink it to ~/.local/bin which kvstore programs will refer to
 - Install pipenv on your system, and use it to install dependencies from provided Pipfile and then run pipenv shell from repo root to activate virtual env
-    - If pipenv complains about specific version 3.9, ignore it and force python version using `-python` flag, any version >=3.7 should work hopefully
+    - If pipenv complains about specific version 3.9, ignore it and force python version using `-python` flag, any version >=3.7 should work
 
 ### How to Run
 
 - Two stages 
     1. Running handler - `distributed_machine.py` 
         - Run `python3 distributed_machine.py` to run handler with default port at 7940
+        - NOTE: `install_go_backend.sh` must be done on all machines where `distributed.py` is run
     2. Running store service - `kvstore_grpc_server.py` 
         - Run `python3 kvstore_grpc_server.py <LOG_DIR_LOCATION>` to run GRPC Server for KVStore using default parameters
 - All logs are written to `<DIR OF distributed_machine.py RUN>/<LOG_DIR_LOCAATION passed to store>`
@@ -146,13 +174,14 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
 ### Handler
 
 ```
-usage: distributed_machine.py [-h] [--port PORT]
+usage: distributed_machine.py [-h] [--port PORT] [--storage STORAGE]
 
 KVStore Server Parameters
 
 optional arguments:
-  -h, --help   show this help message and exit
-  --port PORT  Port of rmi server
+  -h, --help         show this help message and exit
+  --port PORT        Port of rmi server
+  --storage STORAGE  Root dir for storage of this machine's files, defaults to dir from which script is run
 ```
 
 ### KVStore Server
@@ -165,7 +194,7 @@ usage: kvstore_grpc_server.py [-h] [--port PORT] [--shard_cnt SHARD_CNT] [--repl
 KVStore Server Parameters
 
 positional arguments:
-  storage_loc           Location for storage of all logging and database
+  storage_loc           Location storage of all logging and database, inside storage root configuration for each machine
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -204,7 +233,7 @@ optional arguments:
 - Import `RequestWrapper` class from `client.py` and use it to perform interactions with KVStore by passing in location of GRPC Server
 - Example run from python3 interpreter at root of repo
 
-```
+```python
 >>> from client import *
 >>> t = RequestWrapper('localhost:7000')
 >>> t.get('k1')
@@ -220,56 +249,53 @@ optional arguments:
 
 ## Tests / Analysis on distributed version
 
-> **TODO** INCOMPLETE :/
-
-## Tests / Analysis on non-distributed [version](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed)
-
-> **TESTS WERE OBSERVED TO BE MUCH FASTER ON LINUX and machine with moderate number of cores unlike 2 on MacBook Air**
-> **TODO** UPDATE TEST RESULTS ON LINUX
+- Tests / Analysis on non-distributed [version](https://github.com/kishansairam9/ShardedKVStore/tree/no-distributed) are found it it's README
+- Direct comparision between these two branches might not be relevant as distributed version has extra network calls for handling each go backend
+- As a more accuracte representation we compare between various number of distributed handlers running on different number of machines in this section
+- Another tiny difference in tests of both branches is we updated probabilites as 0.5 0.25 0.25 for get put delete respectively, instead of equal probabilites as in general reads are more frequent
 
 - Sanity Check
     - Using python dict as reference for correctness, performed all operations with checks for correctness
-    - Initially filled database with 1000 entries, later performed another 1000 ops with each probability as
+    - Initially filled database with 10000 entries, later performed another 1000 ops with each probability as
         - 0.15 - put
         - 0.35 - delete
         - 0.4 - get of keys existing in database
         - 0.1 - get of non existing keys in database
-- Concurrent Benchmark - 1000 operations, get put delete with equal probability
-    - We experimented with 10 GRPC Server workers and 20, we obtained similar performance with both, hence we stuck to using 10 workers
-    - All the tests were run on 2018 Macbook Air with 8GB RAM, 1.6Ghz Dual core intel i5
+- Concurrent Benchmark - 10000 operations, get put delete with probabilities of 0.5, 0.25, 0.25
 
-5 Shards, each with 5 Replicas
 
-- 1 worker - 1min 56s
-- 3 workers - 4min 29s
-- 5 workers - 7min 23s
+Testing setup
+- We used 20 GRPC kvstore service GRPC workers
+- All the tests were run on server linux CentOS Server with Xeon Processor. 
+- System has 64GB+ RAM (isn't a factor as storage is disk based not in-memory, memory usage was quite low)
+- Location on HDD is used for storage
 
-5 Shards, each with 3 Replicas
+- Note on terminology - here worker means a concurrent user of service. Each worker does 10000 operations
+- More number of workers means more no of concurrent operations
 
-- 1 worker - 1min 28s
-- 3 workers - 3min 21s
-- 5 workers - 4min 46s
+5 shards, each with 5 replicas
+- On 5 nodes
+    - 3m42.067s
+- On 3 nodes
+    - 3m54.790s
+- On 1 node
+    - 4m5.963s
 
-1 Shard, with 5 replicas
 
-- 1 worker - 1min 51s
-- 3 workers - 5min 7s
-- 5 workers - 7min 42s
+> Here the difference in time taken for benchmark is only few seconds. These differences are over very small no of machines 1,3,5. In practice when we scale to hundreds or thousands of machines times compound to a significantly improvement on throughput using distributed version
 
-3 Shards, each with 3 Replicas
 
-- 1 worker - 1min 30s
-- 3 workers - 3min 42s
-- 5 workers - 5min 19s
+For results related to varying shard and replica counts refer tests section of no distributed branch [here](https://github.com/kishansairam9/ShardedKVStore/blob/no-distributed/README.md#tests--analysis)
 
-Explanation of observations from Concurrent benchmark
-    - Note: As can be observed above for 1 worker i.e., no concurrent load we have lower number of shards and lower number of replicas every time to take lesser time. We don't consider 1 worker in the following explanation, as trivially lower both always favours when we have only 1 client. But having only 1 client is unlikely.
-    - Same number of shards, different number of replicas
-        - Consensus algorithm phase dominates more
-        - Lower the number of replicas, lower the time
-    - Different number of shards, same number of replicas
-        - Higher number of shards takes lesser time
-        - This is because due to sharing of requests among different shards, when we have concurrent operations happening, we get performance advantage
+We can make these following observations in general
+- Same number of shards, different number of replicas
+    - Consensus algorithm phase dominates more
+    - Lower the number of replicas, lower the time
+- Different number of shards, same number of replicas
+    - Higher number of shards takes lesser time
+    - This is because due to sharing of requests among different shards, when we have concurrent operations happening, we get performance advantage
+- Higher the number of machines
+    - Higher throughput because requests get distributed over all machines
 
 ## Caveats
 

@@ -1,7 +1,7 @@
 import argparse
 import grpc
 from concurrent import futures
-from python_grpc import kvstore_pb2_grpc, kvstore_pb2
+from grpc_utils import kvstore_pb2_grpc, kvstore_pb2
 from kvstore.store import Store
 
 class KVStoreServicer(kvstore_pb2_grpc.KVStoreServicer):
@@ -30,7 +30,7 @@ class KVStoreServicer(kvstore_pb2_grpc.KVStoreServicer):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='KVStore Server Parameters')
-    parser.add_argument('storage_loc', help='Location for storage of all logging and database')
+    parser.add_argument('storage_loc', help='Location storage of all logging and database, inside storage root configuration for each machine')
     parser.add_argument('--port', type=int, default=7000, help='Port of grpc server')
     parser.add_argument('--shard_cnt', type=int, default=5, help='No of shards')
     parser.add_argument('--replica_cnt', type=int, default=5, help='No of replias for each shard')
