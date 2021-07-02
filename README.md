@@ -27,6 +27,10 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
   - [Testing](#testing)
   - [Client](#client)
 - [Tests / Analysis on distributed version](#tests--analysis-on-distributed-version)
+- [Improvements](#improvements)
+  - [Removing single point of failure & bottleneck](#removing-single-point-of-failure--bottleneck)
+  - [Client side library for faster operations](#client-side-library-for-faster-operations)
+  - [Removing lock on each node caused by thread ownership of Pyro5](#removing-lock-on-each-node-caused-by-thread-ownership-of-pyro5)
 - [Caveats](#caveats)
 - [References](#references)
 
@@ -282,7 +286,10 @@ Testing setup
     - 4m5.963s
 
 
-> Here the difference in time taken for benchmark is only few seconds. These differences are over very small no of machines 1,3,5. In practice when we scale to hundreds or thousands of machines times compound to a significantly improvement on throughput using distributed version
+Here the difference in time taken for benchmark is only few seconds. These differences are over very small no of machines 1,3,5. 
+
+
+In practice over much higher scales we can expect more difference in performance. That being said there are critical improvements that can be made to increase performance mentioned in section on [Improvements](#improvements).
 
 
 For results related to varying shard and replica counts refer tests section of no distributed branch [here](https://github.com/kishansairam9/ShardedKVStore/blob/no-distributed/README.md#tests--analysis)
@@ -296,6 +303,36 @@ We can make these following observations in general
     - This is because due to sharing of requests among different shards, when we have concurrent operations happening, we get performance advantage
 - Higher the number of machines
     - Higher throughput because requests get distributed over all machines
+
+## Improvements
+
+
+### Removing single point of failure & bottleneck
+- Current aspect of design which also is a single point of failure is KV Store service
+- It runs only on one machine and serves all requests from multiple users
+- Issue with running multiple instances of KV Store service is that they need to share state - current details of shards, their locations, leaders etc
+- We can tackle this problem of shared state by using a NoSQL database (which is also horizontally scalable) since BASE consistency is enough for this
+- Then we can run multiple instances of server and load balance requests among them
+
+### Client side library for faster operations
+- In current implementations clients make a call to service and service waits until it gets response for the operation and returns results
+- This causes the GRPC server's thread serving request to be busy as long as request is served
+- We can do better than this by using a technique similart to GFS where they have a client side library and master routes clients to the specific data location
+- So, our service can return the particular node of shard's location to the client and the client side library takes care of remaining
+- In case of failures or network partitions when the location returned by service isn't accessible to client, it can communicate to this to service
+- Which then falls back to serving the request normal way by fetching the data and passing it back to client
+- This increases the ability of service to handle more requests because, it no longer waits for the operation to complete and fetch data
+- This improvement can cause resonable speed up with puts and deletes as they have consensus algorithm to complete, which takes more time than a get, all of the time service was waiting previously
+- Here as well, in case of failure of puts or delete dut to node not RAFT leader should communicate it to service and fall back to normal way of requests
+
+### Removing lock on each node caused by thread ownership of Pyro5
+- Current implementation uses Pyro5 for RMI to distributed nodes. We connect to RMI using Proxy service of Pyro5
+- Requirement of Proxy service is the thread invoking the proxy call needs to own the proxy object
+- If not we need to claim ownership of Proxy object into current thread to make RMI calls 
+- When we are running a GRPC server (with > 1 worker) we have multiple threads invoking requests and thus multiple threads making proxy calls
+- To ensure that thread has ownership when it is making a call, we used a lock
+- This causes that at any time for any node there is only one request taking place. This can be avoided
+- We need to switch from Pyro5 to GRPC for distributed machine calls to make this possible
 
 ## Caveats
 
