@@ -28,7 +28,7 @@ Demo Video - [Onedrive Link](https://iiitaphyd-my.sharepoint.com/:v:/g/personal/
   - [Client](#client)
 - [Tests / Analysis on distributed version](#tests--analysis-on-distributed-version)
 - [Improvements](#improvements)
-  - [Removing single point of failure & bottleneck](#removing-single-point-of-failure--bottleneck)
+  - [Making the service also distributed, not just storage](#making-the-service-also-distributed-not-just-storage)
   - [Client side library for faster operations](#client-side-library-for-faster-operations)
   - [Removing lock on each node caused by thread ownership of Pyro5](#removing-lock-on-each-node-caused-by-thread-ownership-of-pyro5)
 - [Caveats](#caveats)
@@ -307,8 +307,8 @@ We can make these following observations in general
 ## Improvements
 
 
-### Removing single point of failure & bottleneck
-- Current aspect of design which also is a single point of failure is KV Store service
+### Making the service also distributed, not just storage
+- Current aspect of design which also is a single point of failure & bottleneck is KV Store service
 - It runs only on one machine and serves all requests from multiple users
 - Issue with running multiple instances of KV Store service is that they need to share state - current details of shards, their locations, leaders etc
 - We can tackle this problem of shared state by using a NoSQL database (which is also horizontally scalable) since BASE consistency is enough for this
